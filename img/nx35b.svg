@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" width="480" height="360">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#6366F1"/><stop offset="1" stop-color="#A5B4FC"/>
+</linearGradient></defs>
+<rect width="480" height="360" fill="url(#g)"/>
+<circle cx="112" cy="160" r="131" fill="#ffffff" opacity="0.18"/>
+<circle cx="368" cy="200" r="83" fill="#ffffff" opacity="0.14"/>
+<polygon points="0,271 96,190 165,271 287,174 345,271 480,231" fill="#ffffff" opacity="0.22"/>
+<polygon points="0,331 100,241 200,331 320,221 460,331 480,331 480,360 0,360" fill="#ffffff" opacity="0.16"/>
+</svg>

@@ -42,7 +42,8 @@ const ok = data => ({ success: true, data: data === undefined ? null : data });
 const withUser = (item, users) => {
   const u = users.find(x => x.id === item.userId) ||
     (item.userId === 1 ? D.ME : { id: item.userId, nickName: '旅行者' + item.userId, avatar: `img/u2.svg` });
-  return { ...item, name: u.nickName, avatar: u.avatar };
+  /* icon 为评论/通知列表的头像字段名（note-detail/messages 消费端用 c.icon） */
+  return { ...item, name: u.nickName, avatar: u.avatar, icon: u.avatar };
 };
 
 /** 分页：list + current → records（每页 10；页 1 也可直接返回数组，消费端两种都兼容） */
@@ -215,7 +216,7 @@ const routes = [
   { m: 'DELETE', re: /^\/favorite\/(attraction|note)\/(\d+)$/, h: m => { state.favorites = state.favorites.filter(f => !(f.targetType === m[1] && f.targetId === +m[2])); return null; } },
 
   /* --- 私信 --- */
-  { m: 'GET', re: /^\/chat\/sessions$/, h: () => state.chatSessions.map(s => ({ ...s, peer: D.USERS.find(u => u.id === s.peerId), unread: 0 })) },
+  { m: 'GET', re: /^\/chat\/sessions$/, h: () => state.chatSessions.map(s => { const peer = D.USERS.find(u => u.id === s.peerId); return { ...s, peer: peer ? { ...peer, icon: peer.avatar } : null, icon: peer ? peer.avatar : 'img/u2.svg' }; }) },
   { m: 'GET', re: /^\/chat\/list/, h: (p, b, q) => page(state.chatMessages[q.peerId] || [], +q.current || 1) },
   { m: 'GET', re: /^\/chat\/mutual-status/, h: () => ({ mutual: true }) },
   {

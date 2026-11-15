@@ -14,6 +14,7 @@ export const ME = {
   id: 1,
   nickName: '演示旅行家',
   avatar: pic('avatar-me', 200, 200),
+  icon: pic('avatar-me', 200, 200),
   signature: '山河湖海，都不如出发',
   phone: '13800000000',
   bgImage: pic('bg-me', 900, 500)
@@ -26,9 +27,13 @@ export const USERS = [
   { id: 5, nickName: '背包客老周', avatar: pic('u5', 200, 200), signature: '穷游十年，路线规划爱好者' },
   { id: 6, nickName: '朵朵妈', avatar: pic('u6', 200, 200), signature: '亲子游攻略持续更新中' },
   { id: 7, nickName: '南方的南', avatar: pic('u7', 200, 200), signature: '厦门常驻，海边日落收集者' },
-  { id: 8, nickName: '镜头里的风', avatar: pic('u8', 200, 200), signature: '摄影出片机位研究 ' },
+  { id: 8, nickName: '镜头里的风', avatar: pic('u8', 200, 200), signature: '摄影出片机位研究' },
   { id: 9, nickName: '高铁侠', avatar: pic('u9', 200, 200), signature: '周末高铁党，说走就走' },
-  { id: 10, nickName: '小小旅行家', avatar: pic('u10', 200, 200), signature: '大学生特种兵玩法研究' }
+  { id: 10, nickName: '小小旅行家', avatar: pic('u10', 200, 200), signature: '大学生特种兵玩法研究' },
+  { id: 11, nickName: '橘子汽水', avatar: pic('u11', 200, 200), signature: 'citywalk 万物皆可逛' },
+  { id: 12, nickName: '慢速快门', avatar: pic('u12', 200, 200), signature: '人文历史控，讲解器十级学者' },
+  { id: 13, nickName: '海边不出科学家', avatar: pic('u13', 200, 200), signature: '赶潮人，潮汐表比日历看得勤' },
+  { id: 14, nickName: '奶芙不加糖', avatar: pic('u14', 200, 200), signature: '咖啡地图一张一张攒' }
 ];
 
 /** 景点类型 */
@@ -64,8 +69,8 @@ export const ATTRACTIONS = [
   { id: 22, name: '五缘湾湿地公园', destination: '厦门', area: '湖里', address: '五缘湾', openHours: '全天', avgScore: 45, score: 45, avgPrice: 0, hasTicket: false, hasSeckill: false, checkinCount: 2400, sold: 0, x: 118.1759, y: 24.5083, typeId: 1, images: pic('wuyuanwan1'), description: '黑天鹅与红树林栈道，人少清净的本地后花园。' }
 ];
 
-/** 游记（userId 关联 USERS；attractionId 关联景点） */
-export const NOTES = [
+/** 手写精选 12 篇（首批展示） */
+const HIGHLIGHT_NOTES = [
   { id: 101, userId: 2, title: '杭州一日游不走回头路！亲测这条路线绝了', liked: 1280, likedByMe: false, attractionId: 1, createTime: '2026-11-02 10:20', images: pic('n101a') + ',' + pic('n101b') + ',' + pic('n101c'), content: '周末带爸妈走了一条西湖一日游路线，全程不走回头路：早上从断桥入口进白堤，人少光线好，拍完照沿孤山路到平湖秋月；中午在孤山脚下的楼外楼吃了西湖醋鱼（要提前排号）；下午从苏堤南口进，一路走到花港观鱼，正好赶上夕阳；晚饭去河坊街吃小吃。交通建议地铁 1 号线龙翔桥站出站步行 5 分钟。全程步数 1.8 万，爸妈走得动，节奏刚刚好。最重要的是整条线不用回头，每个点的出片率都很高。' },
   { id: 102, userId: 8, title: '灵隐寺清晨 6 点半的体验｜附飞来峰机位', liked: 940, likedByMe: false, attractionId: 2, createTime: '2026-10-28 08:15', images: pic('n102a') + ',' + pic('n102b'), content: '赶在 6 点半开门就进去，香火混着山雾，整个寺院只有鸟叫。飞来峰造像在冷泉溪对岸，晨光斜打在石窟上最好拍。路线：先看造像再上香，最后绕到永福寺的小院喝茶。注意：灵隐寺门票不含飞来峰，需要分开买。从市区打车 25 分钟，7 点半以后就开始堵，一定趁早。' },
   { id: 103, userId: 6, title: '带娃亲子游｜杭州乐园一票通玩攻略', liked: 620, likedByMe: false, attractionId: 9, createTime: '2026-10-20 18:40', images: pic('n103a') + ',' + pic('n103b') + ',' + pic('n103c'), content: '家娃 6 岁，玩了一天总结：上午进园先玩旋转木马和小火车这种温和项目攒信心，中午在园区餐厅人均 40 解决，下午挑战悬挂过山车（身高 1.2m 以上）。水世界记得自带泳衣和速干毛巾。停车 20/天。强调一下排队智慧：热门项目都在下午人多，上午把过山车刷完是关键。' },
@@ -77,33 +82,148 @@ export const NOTES = [
   { id: 109, userId: 10, title: '厦门植物园仙人掌区也太出片了！', liked: 830, likedByMe: false, attractionId: 17, createTime: '2026-11-01 16:20', images: pic('n109a') + ',' + pic('n109b'), content: '从西门进直接坐观光车到多肉植物区，几百种仙人掌造景，随便拍都是杂志感。雨林世界的喷雾每天固定两场（10 点和 15 点），喷雾时逆光拍剪影绝了。门票 30，学生半价。穿浅色衣服出片率翻倍。' },
   { id: 110, userId: 2, title: '六和塔看钱塘江大桥的黄昏', liked: 350, likedByMe: false, attractionId: 10, createTime: '2026-10-12 17:45', images: pic('n110a'), content: '小众到几乎没人写的点：六和塔顶层望钱塘江大桥，绿皮火车从桥上驶过的时候按下快门。塔内旋梯很窄，登塔限流要等一会儿。联票 30 含登塔。配九溪烟树一起，半天足够。' },
   { id: 111, userId: 7, title: '沙坡尾日落指南：避风坞的最佳机位', liked: 610, likedByMe: false, attractionId: 18, createTime: '2026-10-30 18:30', images: pic('n111a') + ',' + pic('n111b'), content: '日落前 40 分钟到艺术西区天台占位，渔船、旧厂区、晚霞同框。拍完直接在大学路吃晚饭：亚海大排档的海蛎煎和面线糊。周末有创意市集，平日更安静。' },
-  { id: 112, userId: 3, title: '良渚五千年的秋天，值得专门跑一趟', liked: 440, likedByMe: false, attractionId: 12, createTime: '2026-11-03 11:50', images: pic('n112a') + ',' + pic('n112b'), content: '遗址公园的秋天是稻田色的，鹿苑的小鹿会追着买鹿饼的人跑。讲解器必租（20 元），否则看到的只是土坡草皮。地铁 2 号线到良渚站转公交。注意 16:00 停止入园，慢慢逛要 3 小时。' }
+  { id: 112, userId: 3, title: '良渚五千年的秋天，值得专门跑一趟', liked: 440, likedByMe: false, attractionId: 12, createTime: '2026-11-03 11:50', images: pic('n112a') + ',' + pic('n112b'), content: '遗址公园的秋天是稻田色的，鹿苑的小鹿会追着买鹿饼的人跑。讲解器必租（20 元），否则看到的只是土坡草皮。地铁 2 号线到良渚站转公交。注意 16:00 停止入园，慢慢逛要 3 小时。' },
 ];
 
-/** 游记评论 */
-export const NOTE_COMMENTS = {
-  101: [
-    { id: 1, userId: 4, content: '楼外楼要排多久呀？想周末去', createTime: '2026-11-03 09:10' },
-    { id: 2, userId: 9, content: '苏堤傍晚真的绝，上周刚去过', createTime: '2026-11-04 20:30' }
-  ],
-  104: [
-    { id: 3, userId: 3, content: '月光岩这个点收藏了！', createTime: '2026-11-06 08:20' }
-  ]
-};
+/** 游记标题语料（每条独立选题，关联景点 id） */
+const NOTE_SEEDS = [
+  { t: '西湖的秋日限定！北山街梧桐黄了', a: 1, u: 11, likes: 1890, time: '2026-11-10 16:30' },
+  { t: '断桥残雪还没到，先收藏这篇等下雪', a: 1, u: 8, likes: 990, time: '2026-11-06 21:00' },
+  { t: '第一次划手划船，师傅讲的西湖故事值回票价', a: 1, u: 13, likes: 640, time: '2026-10-22 18:20' },
+  { t: '苏堤晨跑实录：5 点半的西湖属于本地人', a: 1, u: 2, likes: 450, time: '2026-10-18 07:40' },
+  { t: '灵隐寺求事业上上签！排队攻略看这篇', a: 2, u: 12, likes: 1320, time: '2026-11-04 09:15' },
+  { t: '飞来峰造像细节控 heaven，附讲解词', a: 2, u: 12, likes: 580, time: '2026-10-26 15:00' },
+  { t: '永福寺的小院喝茶，比景区奶茶店强多了', a: 2, u: 14, likes: 720, time: '2026-11-08 14:10' },
+  { t: '雷峰塔夜景刚亮灯的那 20 分钟', a: 3, u: 8, likes: 860, time: '2026-10-30 18:50' },
+  { t: '宋城千古情选座指南：B 区性价比之王', a: 4, u: 9, likes: 1150, time: '2026-11-01 20:30' },
+  { t: '穿汉服逛宋城是什么体验｜出片全程记录', a: 4, u: 11, likes: 940, time: '2026-10-24 13:25' },
+  { t: '西溪火柿节开幕了！摇橹船+柿子双吃', a: 5, u: 6, likes: 680, time: '2026-10-08 10:05' },
+  { t: '在西溪拍芦苇荡，雨天别有味道', a: 5, u: 8, likes: 520, time: '2026-10-19 16:45' },
+  { t: '河坊街的胡庆余堂，免费中药博物馆', a: 6, u: 12, likes: 410, time: '2026-10-14 11:20' },
+  { t: '河坊街小吃 10 元预算挑战，结果超支了', a: 6, u: 4, likes: 970, time: '2026-11-09 12:35' },
+  { t: '九溪十八涧徒步全记录：从龙井村到钱塘江', a: 7, u: 5, likes: 1050, time: '2026-10-16 09:40' },
+  { t: '九溪枫叶刚红了一半，正是人少的时候', a: 7, u: 11, likes: 610, time: '2026-11-07 15:20' },
+  { t: '运河夜游买票攻略：哪种船票最值', a: 8, u: 9, likes: 480, time: '2026-10-21 19:30' },
+  { t: '桥西历史街区：老杭州的慢生活样本', a: 8, u: 2, likes: 390, time: '2026-10-11 14:00' },
+  { t: '杭州乐园万圣节夜场实测！胆小慎入', a: 9, u: 10, likes: 880, time: '2026-10-27 22:15' },
+  { t: '六和塔+钱塘江大桥的百年同框', a: 10, u: 12, likes: 420, time: '2026-10-09 17:00' },
+  { t: '龙井村茶农家喝茶，比景区便宜一半', a: 11, u: 14, likes: 760, time: '2026-10-13 13:10' },
+  { t: '龙井问茶步道：茶山里的 2 小时', a: 11, u: 5, likes: 340, time: '2026-09-30 10:30' },
+  { t: '良渚鹿苑的小鹿真的会追人跑', a: 12, u: 6, likes: 690, time: '2026-10-07 16:20' },
+  { t: '鼓浪屿老别墅地图：笔山路三连拍', a: 13, u: 8, likes: 1210, time: '2026-11-02 11:40' },
+  { t: '鼓浪屿的猫比游客淡定多了', a: 13, u: 13, likes: 530, time: '2026-10-17 10:50' },
+  { t: '内厝澳码头上下岛，全程少走 8000 步', a: 13, u: 7, likes: 830, time: '2026-10-05 09:20' },
+  { t: '曾厝垵夜市 50 元吃 8 样，清单在这', a: 14, u: 4, likes: 1130, time: '2026-11-06 20:40' },
+  { t: '曾厝垵的手作店，寄了张明信片给自己', a: 14, u: 11, likes: 460, time: '2026-10-23 15:30' },
+  { t: '南普陀素饼排队 15 分钟，值得吗？', a: 15, u: 4, likes: 670, time: '2026-10-20 12:00' },
+  { t: '南普陀后山五老峰：看厦大全景的免费路线', a: 15, u: 5, likes: 540, time: '2026-10-12 08:50' },
+  { t: '环岛路骑行 20 公里，屁股疼但值', a: 16, u: 9, likes: 700, time: '2026-10-31 18:00' },
+  { t: '椰风寨看日出，4 点半闹钟的意义', a: 16, u: 7, likes: 590, time: '2026-10-06 06:35' },
+  { t: '植物园雨林喷雾时段的逆光剪影', a: 17, u: 8, likes: 1010, time: '2026-11-04 15:45' },
+  { t: '沙坡尾的咖啡地图，一天 4 杯的量', a: 18, u: 14, likes: 820, time: '2026-11-07 16:10' },
+  { t: '胡里山炮台的操演时间表（别跑空）', a: 19, u: 12, likes: 380, time: '2026-10-10 14:25' },
+  { t: '中山路骑楼下躲雨，躲出一顿沙茶面', a: 20, u: 4, likes: 480, time: '2026-10-18 19:20' },
+  { t: '集美学村龙舟池畔，安静到能听见风', a: 21, u: 3, likes: 350, time: '2026-10-04 16:50' },
+  { t: '五缘湾的黑天鹅不怕人，带点生菜去', a: 22, u: 13, likes: 300, time: '2026-09-29 10:10' }
+];
 
-/** 景点评论 */
-export const ATTRACTION_COMMENTS = {
-  1: [
-    { id: 1, userId: 3, score: 5, content: '环湖走了三小时，风景没话说，免费部分就很精彩。', createTime: '2026-11-01 15:20' },
-    { id: 2, userId: 6, score: 4, content: '节假日人很多，建议工作日早上去。', createTime: '2026-10-26 10:05' }
-  ],
-  2: [
-    { id: 3, userId: 8, score: 5, content: '清晨去体验最好，禅意十足。', createTime: '2026-10-28 09:00' }
-  ],
-  4: [
-    { id: 4, userId: 9, score: 5, content: '千古情演出值回票价。', createTime: '2026-10-25 20:15' }
-  ]
-};
+/** 游记正文拼装：引入段 + 景点简介 + 结尾贴士（三段式，按 index 选取避免同质） */
+function noteContent(s, a) {
+  const i = (s.a * 7 + s.u) % 4;
+  const intros = [
+    `这趟${a ? a.destination : ''}之行最惊喜的就是《${a ? a.name : '这里'}》——`,
+    `写在前面：这篇整理给想去${a ? a.name : '这里'}的朋友，全程亲测、无广，`,
+    `刷到就是缘分，把我在${a ? a.name : '这里'}踩过的坑和捡到的宝一次说清：`,
+    `工作日逃班去的${a ? a.name : '这里'}，体验感直接拉满，正文开始——`
+  ];
+  const tips = [
+    '\n\n📌 实用信息：建议避开节假日高峰，地铁/公交直达，全程步行 1 万步左右，穿舒服的鞋。',
+    '\n\n📌 花费参考：门票+餐饮人均 80-150，学生证记得带，很多地方有半价。',
+    '\n\n📌 最佳时段：早上开门或日落前一小时，人最少、光线最好，拍照不用等人走开。',
+    '\n\n📌 带娃/带长辈提示：全程节奏放慢，中途有休息点和卫生间，推车基本无障碍。'
+  ];
+  const desc = a && a.description ? `\n\n${a.description}这次的路线是本地朋友推荐的，把门票、交通、吃食都整理在图里了，照着走就行。` : '';
+  return intros[i] + desc + tips[(i + 1) % 4];
+}
+
+/** 游记全量列表：手写精选（前 12）+ 语料生成（38 篇），首页/列表展示顺序即此数组顺序 */
+export const NOTES = [...HIGHLIGHT_NOTES, ...NOTE_SEEDS.map((s, i) => ({
+  id: 113 + i,
+  title: s.t,
+  userId: s.u,
+  liked: s.likes,
+  likedByMe: false,
+  attractionId: s.a,
+  createTime: s.time,
+  images: [pic(`nx${i}a`), pic(`nx${i}b`), pic(`nx${i}c`)].slice(0, 1 + i % 3).join(','),
+  content: noteContent(s, ATTRACTIONS.find(a => a.id === s.a))
+}))];
+
+/** 游记评论：语料池 × 每篇 2~6 条（评论者/内容/时间错开） */
+const COMMENT_POOL = [
+  '这条路线太实用了，收藏了！', '请问周末去人多吗？想这周过去', '刚回来，按你说的走完全没踩坑',
+  '照片拍得也太好了吧，什么相机呀', '求问带 5 岁娃能走完全程吗', '同款路线打卡完成，感谢攻略🙏',
+  '补充一个：停车场周六 10 点后就满了，早点去', '这个机位我找了半天，原来在这里！', '写得好细，转发给对象抄作业了',
+  '已收藏！月底出发照着走一趟', '太赞了，正好解决我的行程纠结', '请问现在门票要提前预约吗？',
+  '看完立刻订了车票，冲了！', '本地人表示你写得比我们都全😂', '前面那段路的厕所少，记得先上',
+  '跟着走了半程，风景和你说的一样', '这篇比官方攻略靠谱多了', '求一个雨天替代方案，下周天气悬',
+  '人均消费和你写的差不多，没坑', '最后那张图绝了，原图直出？', '已经安利给全办公室了',
+  '周五晚上去的，人少景美，舒服', '感谢分享！小孩玩得不想走', '蹲一个冬天的更新版～'
+];
+const LIKE_WORDS = ['👍', '❤️', '🔥', '⭐'];
+
+export const NOTE_COMMENTS = (() => {
+  const map = {};
+  NOTES.forEach((n, idx) => {
+    const count = 2 + (idx * 7) % 5; // 2~6 条
+    const list = [];
+    for (let j = 0; j < count; j++) {
+      const userId = 2 + (idx * 5 + j * 3) % 13;
+      list.push({
+        id: idx * 10 + j + 1,
+        userId,
+        content: COMMENT_POOL[(idx * 3 + j * 5) % COMMENT_POOL.length],
+        createTime: '2026-11-' + String(1 + (idx + j) % 14).padStart(2, '0') + ' ' + String(9 + j % 12).padStart(2, '0') + ':' + String((j * 17) % 60).padStart(2, '0')
+      });
+    }
+    map[String(n.id)] = list;
+  });
+  return map;
+})();
+
+/** 景点评论：22 个景点全覆盖（每处 2~5 条，带 4~5 星评分，语料按景点错开避免同质） */
+const A_COMMENT_POOL = [
+  '风景没话说，免费部分就很精彩，强烈推荐。', '节假日人很多，建议工作日早上去。',
+  '整体体验超出预期，下次还来。', '打扫得很干净，指示牌也清楚，不绕路。',
+  '门口买票不用排队，扫码入园很方便。', '拍照真的绝，随手一张都能当壁纸。',
+  '本地人周末也爱来，推荐给来玩的朋友。', '讲解器值得租，历史细节一下子鲜活了。',
+  '周边吃的很多，玩完直接解决午饭。', '傍晚去最好看，人少还凉快。',
+  '带爸妈去的，全程走得很舒服，没有难走的路。', '冬天来是另一种味道，人更少。',
+  '地铁过去很方便，出站走几分钟就到。', '性价比很高，半天才把精华逛完。',
+  '小朋友玩得不想走，适合亲子。', '日落时分的光线绝了，一定要赶那个点。',
+  '逛完正好接上旁边的景点，可以串一条线。', '记得提前看开放时间，别跑空。',
+  '比起名气大的，这里反而更让我惊喜。', '环境很治愈，坐一下午都不腻。',
+  '人多但不挤，秩序挺好的。', '建议预留 2-3 小时，慢慢逛才出味道。'
+];
+export const ATTRACTION_COMMENTS = (() => {
+  const map = {};
+  ATTRACTIONS.forEach((a, idx) => {
+    const count = 2 + (idx * 3) % 4; // 2~5 条
+    const list = [];
+    for (let j = 0; j < count; j++) {
+      const userId = 2 + (idx * 4 + j * 3) % 13;
+      list.push({
+        id: idx * 10 + j + 1,
+        userId,
+        score: 4 + (idx + j) % 2,
+        content: A_COMMENT_POOL[(idx * 3 + j * 7) % A_COMMENT_POOL.length],
+        createTime: '2026-10-' + String(2 + (idx * 2 + j) % 28).padStart(2, '0') + ' ' + String(8 + j % 11).padStart(2, '0') + ':' + String((j * 23) % 60).padStart(2, '0')
+      });
+    }
+    map[String(a.id)] = list;
+  });
+  return map;
+})();
 
 /**
  * 门票：秒杀场次窗口动态生成（当前时间起，永远有效）
@@ -143,7 +263,9 @@ export const POINTS_RECORDS = [
 /** 私信会话与消息 */
 export const CHAT_SESSIONS = [
   { peerId: 2, lastMessage: '苏堤那边傍晚人不多，放心去', lastTime: '2026-11-14 21:10', pinned: true },
-  { peerId: 7, lastMessage: '鼓浪屿船票记得提前订', lastTime: '2026-11-13 18:20', pinned: false }
+  { peerId: 7, lastMessage: '鼓浪屿船票记得提前订', lastTime: '2026-11-13 18:20', pinned: false },
+  { peerId: 6, lastMessage: '亲子路线我整理好发你啦', lastTime: '2026-11-11 14:05', pinned: false },
+  { peerId: 4, lastMessage: '河坊街那家葱包烩真的绝', lastTime: '2026-11-10 12:30', pinned: false }
 ];
 export const CHAT_MESSAGES = {
   2: [
@@ -153,14 +275,27 @@ export const CHAT_MESSAGES = {
   ],
   7: [
     { id: 4, fromUserId: 7, content: '鼓浪屿船票记得提前订', createTime: '2026-11-13 18:20' }
+  ],
+  6: [
+    { id: 5, fromUserId: 6, content: '你家娃几岁呀？我给你挑条轻松的', createTime: '2026-11-11 13:50' },
+    { id: 6, fromUserId: 1, content: '6 岁，体力不错但走不了太远', createTime: '2026-11-11 13:58' },
+    { id: 7, fromUserId: 6, content: '亲子路线我整理好发你啦', createTime: '2026-11-11 14:05' }
+  ],
+  4: [
+    { id: 8, fromUserId: 4, content: '河坊街那家葱包烩真的绝', createTime: '2026-11-10 12:30' }
   ]
 };
 
-/** 通知（赞/关注/评论） */
+/** 通知（赞/关注/评论，多条近期动态） */
 export const NOTIFICATIONS = [
-  { id: 1, category: 'likes', userId: 3, noteId: 101, content: '赞了你的游记《杭州一日游不走回头路》', createTime: '2026-11-10 12:00' },
-  { id: 2, category: 'follows', userId: 5, content: '关注了你', createTime: '2026-11-09 18:30' },
-  { id: 3, category: 'comments', userId: 4, noteId: 101, content: '评论了你的游记：楼外楼要排多久呀？', createTime: '2026-11-03 09:10' }
+  { id: 1, category: 'likes', userId: 3, noteId: 101, content: '赞了你的游记《杭州一日游不走回头路》', createTime: '2026-11-14 12:00' },
+  { id: 2, category: 'likes', userId: 8, noteId: 101, content: '赞了你的游记《杭州一日游不走回头路》', createTime: '2026-11-13 20:15' },
+  { id: 3, category: 'likes', userId: 11, noteId: 101, content: '赞了你的游记《杭州一日游不走回头路》', createTime: '2026-11-12 09:40' },
+  { id: 4, category: 'follows', userId: 5, content: '关注了你', createTime: '2026-11-12 18:30' },
+  { id: 5, category: 'follows', userId: 14, content: '关注了你', createTime: '2026-11-11 10:05' },
+  { id: 6, category: 'comments', userId: 4, noteId: 101, content: '评论了你的游记：楼外楼要排多久呀？', createTime: '2026-11-11 09:10' },
+  { id: 7, category: 'comments', userId: 9, noteId: 101, content: '评论了你的游记：苏堤傍晚真的绝，上周刚去过', createTime: '2026-11-10 20:30' },
+  { id: 8, category: 'comments', userId: 12, noteId: 104, content: '评论了你的游记：月光岩这个点收藏了！', createTime: '2026-11-09 08:20' }
 ];
 
 /** 旅行计划（items 用 trip-detail 消费的扁平字段：attractionId/attractionName/attractionImage） */
