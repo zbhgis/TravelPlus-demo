@@ -267,10 +267,11 @@ body.drag-scrolling * {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 12px;
-  min-height: 52px;
-  /* 手机端体验：iOS 独立窗口/刘海屏下头部避开状态栏（浏览器内 env 为 0，无影响） */
-  padding-top: calc(12px + env(safe-area-inset-top, 0px));
-  padding-bottom: 12px;
+  min-height: 44px;
+  /* 【多分辨率适配】刘海/独立窗口避让 env 封顶 60px——部分安卓 WebView 会报告异常大的
+     safe-area 值导致页头下方留白失控；封顶后刘海机型正常避让、异常设备不再放大留白 */
+  padding-top: calc(6px + min(env(safe-area-inset-top, 0px), 60px));
+  padding-bottom: 8px;
   padding-left: 16px;
   padding-right: 16px;
   background: var(--surface);
@@ -357,8 +358,8 @@ body.drag-scrolling * {
   display: flex;
   align-items: center;
   gap: 10px;
-  /* 移动端：贴顶布局 + 刘海安全区 */
-  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 6px;
+  /* 【多分辨率适配】移动端贴顶布局 + 刘海避让封顶 60px（防异常设备 env 过大） */
+  padding: calc(6px + min(env(safe-area-inset-top, 0px), 60px)) 16px 6px;
 }
 .home-topbar .channel-tabs {
   flex: 1;
@@ -6073,7 +6074,8 @@ img[src=""], img:not([src]) { opacity: 0; }
 /* --- 极小屏 (≤360px)：缩减间距、字号，保证 320px 无横向滚动 --- */
 @media (max-width: 360px) {
   .page-content { padding: 10px 12px; }
-  .page-header { padding: 10px 12px; }
+  /* 小屏同样保留刘海避让（env 封顶 60px），不能被简写覆盖丢失 */
+  .page-header { padding: calc(6px + min(env(safe-area-inset-top, 0px), 60px)) 12px 8px; }
   .page-header h2 { font-size: 15px; }
   .section-title { font-size: 15px; padding: 12px 12px 6px; }
   .search-bar { padding: 8px 12px; gap: 8px; }
@@ -6630,8 +6632,8 @@ img[src=""], img:not([src]) { opacity: 0; }
 /* 横屏矮屏：压缩头部高度，把空间留给内容区 */
 @media (max-height: 520px) and (orientation: landscape) {
   .page-header {
-    min-height: 48px;
-    padding-top: 8px;
+    min-height: 44px;
+    padding-top: 6px;
     padding-bottom: 8px;
   }
   .search-header {
