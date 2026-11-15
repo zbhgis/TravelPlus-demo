@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<title>TravelPlus</title>
+<link rel="stylesheet" href="css/app.css?v=imgadd1116"/>
+</head>
+<body>
+<!-- 【全局搜索的实现】全局搜索入口置顶条——tab 页（首页/旅行/消息/我的）显示，点击跳 #/search -->
+<div id="global-search" class="global-search-bar hidden">
+  <div class="global-search-inner">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <span>搜索景点、游记、用户...</span>
+  </div>
+</div>
+<div id="app" class="app-container"></div>
+<div id="tabbar" class="tabbar"></div>
+<!-- 【旅游AI助手的实现】全局 AI 助手悬浮入口：常驻在手机右下角，点击进全屏对话页 -->
+<button class="ai-fab hidden" id="global-ai-fab" aria-label="旅游AI助手" title="旅游AI助手">
+  <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2c4.9 0 8.6 3.1 8.6 7 0 3.9-3.7 7-8.6 7-.9 0-1.8-.12-2.6-.35l-3.3 1.75.6-2.75C4.6 14.6 3.4 12.6 3.4 10.2c0-3.9 3.7-7 8.6-7Z"/><circle cx="9.3" cy="9.6" r="1" fill="currentColor" stroke="none"/><circle cx="14.7" cy="9.6" r="1" fill="currentColor" stroke="none"/><path d="M9.8 12.3c.55.62 1.3.95 2.2.95s1.65-.33 2.2-.95"/></svg>
+</button>
+<div id="toast" class="toast"></div>
+<!-- 【手机模拟的实现】桌面端手机外壳：边框/状态栏/Home 指示条（移动端由 CSS 隐藏） -->
+<div id="phone-shell" class="phone-shell" aria-hidden="true">
+  <div class="phone-device">
+    <div class="phone-statusbar" title="点击回到顶部">
+      <span class="phone-time" id="phone-time">9:41</span>
+      <span class="phone-island"></span>
+      <span class="phone-status-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="4.3" y="5" width="3" height="7" rx="1"/><rect x="8.6" y="3" width="3" height="9" rx="1"/><rect x="12.9" y="1" width="3" height="11" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1.5 4.5a10 10 0 0 1 13 0"/><path d="M4 7a6.5 6.5 0 0 1 8 0"/><path d="M6.5 9.5a3 3 0 0 1 3 0"/><circle cx="8" cy="11" r=".8" fill="currentColor" stroke="none"/></svg>
+        <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="13" height="7" rx="1.6" fill="currentColor"/><rect x="19.5" y="3.5" width="2" height="4" rx="1" fill="currentColor" opacity=".45"/></svg>
+      </span>
+    </div>
+    <div class="phone-home-indicator"></div>
+  </div>
+</div>
+<!-- 【演示版】Mock 拦截层必须先于 main.js 执行：包装 fetch 使全部接口离线可用 -->
+<script type="module" src="js/mock/mock-install.js?v=demo1"></script>
+<script type="module" src="js/main.js?v=exp25"></script>
+<!-- 【地图路线规划的实现】高德 JS API 2.0——底图 + 路径规划插件（AMap.Driving/AMap.Walking）
+     安全配置必须在加载脚本前声明；key/密钥为 JS API 类型（控制台 Web端(JS API) 平台） -->
+<script>
+  window._AMapSecurityConfig = { securityJsCode: 'd0bc17bddc23f8fe5d6c08a29d39e2e4' };
+</script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=e734d90baf148f405672b79a0ee52e36&plugin=AMap.Driving,AMap.Walking,AMap.Transfer,AMap.Geolocation,AMap.PlaceSearch"></script>
+<!-- 【秒杀券的实现】JsBarcode CDN——条形码渲染依赖；若加载失败页面内 CSS 条纹降级显示 -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,6642 @@
+/* === TravelPlus Design Tokens & Base Styles === */
+:root {
+  --primary: #0E9F8A;
+  --primary-light: #e6f7f5;
+  --primary-dark: #0b7d6d;
+  --bg: #f5f6f7;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --text-secondary: #999999;
+  --text-hint: #bbbbbb;
+  --border: #eeeeee;
+  --border-light: #f5f5f5;
+  --danger: #f87171;
+  --warning: #f59e0b;
+  --success: #10b981;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 4px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.1);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --tabbar-height: 56px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-family:var(--font);font-size:16px;line-height:1.5;color:var(--text);background:var(--bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body{min-height:100vh;min-height:100dvh;overflow-x:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
+/* 【触屏模拟的实现】允许 input/textarea/contenteditable 文本选择 */
+input,textarea,[contenteditable]{user-select:text;-webkit-user-select:text}
+/* 【触屏模拟的实现】滚动条手机化——body 级细滚动条 */
+body::-webkit-scrollbar{width:4px}
+body::-webkit-scrollbar-track{background:transparent}
+body::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:2px}
+/* 【触屏模拟的实现】所有滚动容器统一细滚动条/隐藏 */
+.chat-messages,.side-drawer,.nearby-scroll,.dest-cards-scroll,.dest-tabs-wrap,.attraction-search-dropdown{-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.12) transparent}
+.chat-messages::-webkit-scrollbar,.side-drawer::-webkit-scrollbar,.attraction-search-dropdown::-webkit-scrollbar{width:3px}
+.chat-messages::-webkit-scrollbar-track,.side-drawer::-webkit-scrollbar-track,.attraction-search-dropdown::-webkit-scrollbar-track{background:transparent}
+.chat-messages::-webkit-scrollbar-thumb,.side-drawer::-webkit-scrollbar-thumb,.attraction-search-dropdown::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.12);border-radius:2px}
+/* 【触屏模拟的实现】统一按压反馈——所有可点击元素 active 态 */
+.card:active,.attraction-card:active,.note-card:active,.ticket-card:active{transform:scale(0.98);transition:transform .15s}
+.tabbar-item:active{transform:scale(0.92);transition:transform .1s}
+.tabbar-item:active svg{transform:scale(0.9);transition:transform .1s}
+.channel-tab:active,.tab-item:active,.login-tab:active,.fav-tab:active,.user-tab:active,.search-result-tab:active{background:var(--bg);transition:background .15s}
+.dest-tab:active{opacity:.75;transition:opacity .1s}
+.comment-item:active{background:var(--bg);transition:background .15s}
+.btn:active{opacity:.82;transition:opacity .1s}
+.feed-note-card:active{transform:scale(0.985);transition:transform .15s}
+.buddy-card:active{background:var(--bg);transition:background .15s}
+a{color:var(--primary);text-decoration:none}
+img{max-width:100%;display:block;-webkit-touch-callout:default}
+/* 【手机端体验的实现】图片恢复长按保存/识别（body 的 -webkit-touch-callout:none 会连图片一并禁掉，这里单独放开） */
+button{border:none;background:none;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+input,textarea{font:inherit;outline:none;border:1px solid var(--border);border-radius:var(--radius-xs);padding:10px 12px;width:100%;background:var(--surface);transition:border-color .2s}
+input:focus,textarea:focus{border-color:var(--primary)}
+textarea{resize:vertical;min-height:80px}
+
+/* 【桌面端滑动模拟的实现】鼠标拖拽滚动时的手型光标与防选中 */
+body.drag-scrolling,
+body.drag-scrolling * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+/* === Layout === */
+/* 【布局的实现】手机容器约束——整体限定 480px 宽并在桌面宽屏下水平居中，底部为 tabbar+安全区留白 */
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 16px);
+  /* 左右安全区：横屏刘海/挖孔屏时内容不被遮挡；桌面 env=0 无影响 */
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+}
+/* 【手机端体验的实现】页面进入动画：路由切换时新内容轻量上浮淡入（180ms）
+ * - innerHTML 替换产生的新元素天然重播动画；尊重系统"减弱动态效果"设置 */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.app-container > * {
+  animation: pageIn 0.18s ease-out;
+}
+/* 【侧边菜单的实现】抽屉/遮罩不参与页面进入动画：
+   pageIn 动画的 transform 会覆盖 .side-drawer 的 translateX(-100%) 隐藏态，
+   导致进入个人主页瞬间抽屉在左侧闪现/跳动。 */
+.app-container > .side-drawer,
+.app-container > .side-mask {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-container > * { animation: none; }
+}
+
+/* 【手机端体验的实现】全屏页（tabbar 隐藏）：底部只保留安全区，去掉 56px tabbar 占位灰条 */
+.app-container.no-tabbar {
+  padding-bottom: var(--safe-bottom);
+}
+
+/* === Global Search Bar (tab 页置顶) === */
+/* 【全局搜索的实现】固定顶部搜索条——与 app-container 同宽居中，tab 页可见 */
+.global-search-bar {
+  position: fixed;
+  /* 真机刘海/状态栏安全区；桌面手机外壳场景由后面的媒体查询覆盖为 58px */
+  top: env(safe-area-inset-top, 0px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  z-index: 60;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.global-search-bar.hidden {
+  display: none;
+}
+/* 搜索条内层：圆角灰色底 + 搜索图标 + 占位文字 */
+.global-search-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 7px 12px;
+  padding: 8px 14px;
+  background: var(--bg);
+  border-radius: 20px;
+  font-size: 14px;
+  color: var(--text-hint);
+}
+.global-search-inner svg {
+  flex-shrink: 0;
+}
+.global-search-inner span {
+  flex: 1;
+}
+/* 全局搜索条可见时，app 容器顶部留出空间（避免内容被搜索条遮挡） */
+.app-container.has-global-search {
+  padding-top: calc(50px + env(safe-area-inset-top, 0px));
+}
+
+/* === Tabbar === */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: calc(var(--tabbar-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+}
+.tabbar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color .2s;
+}
+.tabbar-item.active { color: var(--primary); }
+.tabbar-item span { line-height: 1; }
+
+/* === Toast === */
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) scale(0.8);
+  background: rgba(0,0,0,0.78);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s, transform .25s;
+  white-space: nowrap;
+  max-width: 80vw;
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%,-50%) scale(1);
+}
+
+/* === Loading === */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-bottom: 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* === Empty State === */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.empty-state svg { margin-bottom: 12px; opacity: 0.5; }
+
+/* === Cards === */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.card + .card { margin-top: 12px; }
+
+/* === Buttons === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background .2s, opacity .2s;
+  line-height: 1.4;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:active { background: var(--primary-dark); }
+.btn-outline { border: 1px solid var(--primary); color: var(--primary); }
+.btn-outline:active { background: var(--primary-light); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
+.btn-block { width: 100%; }
+.btn:disabled { opacity: 0.5; pointer-events: none; }
+
+/* === Header === */
+/* 三列网格：左操作 1fr / 标题 auto / 右操作 1fr，
+   左右等宽后标题始终位于整条头部的几何中心，不再被两侧按钮宽度影响 */
+.page-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  /* 手机端体验：iOS 独立窗口/刘海屏下头部避开状态栏（浏览器内 env 为 0，无影响） */
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  padding-bottom: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.page-header h2 {
+  grid-column: 2;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+/* 左侧返回/菜单贴左，右侧最后一个操作贴右 */
+.page-header > .header-back,
+.page-header > .menu-btn {
+  justify-self: start;
+}
+.page-header > :last-child:not(h2) {
+  justify-self: end;
+}
+.header-back {
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.header-right { flex-shrink: 0; }
+
+/* === Page content === */
+.page-content { padding: 12px 16px; }
+
+/* === Avatar === */
+.avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--border); }
+.avatar-sm { width: 32px; height: 32px; }
+.avatar-lg { width: 56px; height: 56px; }
+.avatar-mask { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1.5px solid #fff; background: var(--border); }
+
+/* === Image carousel / gallery === */
+.img-carousel {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  background: var(--border);
+}
+.img-carousel .carousel-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+.img-carousel .carousel-slide {
+  min-width: 100%;
+  height: 100%;
+}
+.img-carousel .carousel-slide img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.img-carousel .carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+.img-carousel .carousel-dot {
+  width: 6px; height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.5);
+  transition: all .2s;
+}
+.img-carousel .carousel-dot.active {
+  width: 16px;
+  background: #fff;
+}
+
+/* === Channel sub-tabs (聚合首页 关注|游记|景点) === */
+/* 【小红书式顶栏的实现】首页频道 tabs 居左 + 右上角放大镜搜索（替代整行搜索条） */
+.home-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* 移动端：贴顶布局 + 刘海安全区 */
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 6px;
+}
+.home-topbar .channel-tabs {
+  flex: 1;
+  margin: 0;
+}
+.home-search-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s, box-shadow .15s;
+}
+.home-search-btn:active {
+  transform: scale(0.92);
+  box-shadow: var(--shadow);
+}
+.channel-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin: 10px 16px;
+}
+.channel-tab {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  text-align: center;
+  transition: all .2s;
+  cursor: pointer;
+}
+.channel-tab.active {
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* === Tabs (2-row 5-col grid) === */
+.tabs-scroll {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--surface);
+}
+.tab-item {
+  text-align: center;
+  padding: 8px 4px;
+  margin: 2px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all .2s;
+  cursor: pointer;
+}
+.tab-item.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 500;
+}
+/* 【景点分类 tab 的实现】城市模式类型条：横向滚动 pill（可滑动查看 11 个分类）
+ * 【UI 统一性的实现】左右 16px 内缩与相邻内容（频道 tab/城市选择条/景点卡片）对齐，
+ * 避免 pill 滚动时超出卡片右边界、视觉上比其他内容块宽 */
+.city-type-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 0 16px;
+  padding: 10px 0;
+  background: var(--bg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.city-type-tabs::-webkit-scrollbar { display: none; }
+.city-type-tabs .tab-item {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.city-type-tabs .tab-item.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* === 【景点排序筛选的实现】类型 tab 行：pills 左侧滚动 + 排序下拉靠右 === */
+.filter-row {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  margin: 0 16px;
+}
+.filter-row #home-type-tabs.city-type-tabs {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.sort-dropdown {
+  position: relative;
+  flex: 0 0 auto;
+}
+.sort-dd-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sort-dd-btn:active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.sort-dd-btn svg {
+  transition: transform 0.15s;
+}
+.sort-dropdown.open .sort-dd-btn svg {
+  transform: rotate(180deg);
+}
+.sort-dd-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 152px;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+  z-index: 60;
+  display: none;
+}
+.sort-dd-menu.show {
+  display: block;
+}
+.sort-dd-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sort-dd-item.active {
+  color: var(--primary);
+  background: var(--primary-light);
+  font-weight: 600;
+}
+.sort-dd-dir {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.sort-dd-item.active .sort-dd-dir {
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--primary);
+  font-weight: 500;
+}
+/* 距离角标：距离排序时卡片展示"距市中心/距您 x.xkm" */
+.card-distance {
+  font-size: 11px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+/* === 【随机刷新返回的实现】游记"返回之前推荐"悬浮按钮（右下角，仅快照存在时显示） ===
+   坐标系与 AI 悬浮球对齐（球顶上方 12px），移动端/桌面外壳均不重叠 */
+.restore-fab {
+  position: fixed;
+  right: 14px;
+  bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 70px);
+  z-index: 90;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(14, 159, 138, 0.28), 0 2px 6px rgba(17, 24, 39, 0.08);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.restore-fab:active {
+  transform: scale(0.92);
+}
+
+/* === Search bar === */
+.search-bar {
+  padding: 10px 16px;
+  background: var(--surface);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.search-bar input {
+  flex: 1;
+  border-radius: 20px;
+  background: var(--bg);
+  border: 1px solid transparent;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+.search-bar input:focus { border-color: var(--primary); background: var(--surface); }
+.search-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+/* === Attraction card === */
+.attraction-card {
+  display: flex;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+}
+.attraction-card .card-img {
+  width: 120px;
+  min-height: 110px;
+  flex-shrink: 0;
+  background: var(--border);
+}
+.attraction-card .card-img img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.attraction-card .card-info {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.attraction-card .card-name {
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.attraction-card .card-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.attraction-card .card-bottom {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  font-size: 12px;
+}
+.attraction-card .card-score {
+  color: var(--warning);
+  font-weight: 500;
+}
+.attraction-card .card-price {
+  color: var(--danger);
+  font-weight: 500;
+}
+.attraction-card .card-sold {
+  color: var(--text-hint);
+}
+/** 【景点列表的实现】秒杀徽标：红色背景小药丸，紧贴门票价格显示 */
+.attraction-card .seckill-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: #fff0f0;
+  color: var(--danger);
+  font-weight: 500;
+  margin-left: 4px;
+  line-height: 1.4;
+}
+/** 【景点列表的实现】免费标签：绿色文字，替代原红色门票价格 */
+.attraction-card .card-free {
+  color: var(--success);
+  font-weight: 500;
+}
+
+/* === Ticket card === */
+.ticket-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.ticket-card .ticket-info { flex: 1; min-width: 0; }
+.ticket-card .ticket-title { font-size: 15px; font-weight: 500; }
+.ticket-card .ticket-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.ticket-card .ticket-price { display: flex; align-items: baseline; gap: 6px; margin-top: 4px; }
+.ticket-card .ticket-pay { font-size: 20px; color: var(--danger); font-weight: 600; }
+.ticket-card .ticket-original { font-size: 12px; color: var(--text-hint); text-decoration: line-through; }
+.ticket-card .ticket-stock { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.ticket-card .ticket-time { font-size: 11px; color: var(--primary); margin-top: 2px; }
+
+/* === Note card (waterfall) === */
+/* 游记页标题「热门游记」可点击：随机换一批（替代悬浮刷新按钮） */
+#notes-title {
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+#notes-title:active {
+  opacity: 0.55;
+}
+.notes-waterfall {
+  columns: 2;
+  column-gap: 10px;
+  padding: 12px 16px 16px;
+}
+.note-card {
+  break-inside: avoid;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 10px;
+}
+.note-card .note-img {
+  width: 100%;
+  background: var(--border);
+}
+.note-card .note-img img {
+  width: 100%; display: block;
+}
+.note-card .note-body {
+  padding: 10px 12px;
+}
+.note-card .note-title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.note-card .note-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.note-card .note-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.note-card .note-author span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.note-card .note-likes {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+/* === Feed (timeline) === */
+.feed-list { padding: 0 16px; }
+.feed-item { margin-bottom: 12px; }
+
+/* === Profile === */
+.profile-header {
+  background: var(--surface);
+  padding: 24px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+.profile-header .profile-info { flex: 1; }
+.profile-header .profile-name { font-size: 18px; font-weight: 600; }
+.profile-header .profile-sign { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+.profile-login-prompt {
+  padding: 60px 20px;
+  text-align: center;
+}
+.profile-login-prompt p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+/* === 【签到功能的实现】个人主页签到卡：月份标题+连签天数 / 最近7天签到条+按钮 === */
+.sign-card {
+  background: var(--surface);
+  margin: 8px 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.sign-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.sign-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+/* 头部右侧：连签天数 + 展开箭头（展开时 180° 旋转） */
+.sign-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sign-streak {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.sign-streak b {
+  color: var(--primary);
+  font-weight: 600;
+  padding: 0 1px;
+}
+/* 「月历 ▾」展开按钮：胶囊描边样式，让展开入口一眼可见 */
+.sign-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.sign-card.expanded .sign-toggle {
+  background: var(--primary-light);
+  border-color: transparent;
+  color: var(--primary);
+}
+.sign-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* 最近 7 天签到条：日期 chip 均分整行 */
+.sign-strip-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 5px;
+}
+.sign-day {
+  flex: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--text-hint);
+  border: 1.5px solid var(--border);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+/* 已签：主题色实心白字 */
+.sign-day.signed {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 500;
+}
+/* 今天未签：主题色描边引导 */
+.sign-day.today:not(.signed) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+/* 今天已签：实心 + 浅色光环 */
+.sign-day.signed.today {
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+/* === 签到卡展开态：本月整月日历（支持月份切换） === */
+.sign-calendar {
+  display: none;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+.sign-card.expanded .sign-calendar {
+  display: block;
+}
+/* 月份导航行：‹ 年月 › */
+.sign-cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.sign-cal-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.sign-cal-arrow {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sign-cal-arrow:active:not(.disabled) {
+  background: var(--border-light);
+}
+.sign-cal-arrow.disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+/* 按月加载过渡态 */
+.sign-cal-loading {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-hint);
+  padding: 22px 0;
+}
+/* 星期表头 + 日期网格：周一至周日 7 列 */
+.sign-cal-week,
+.sign-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 6px;
+}
+.sign-cal-w {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-hint);
+  padding-bottom: 4px;
+}
+.sign-cal-cell {
+  width: 28px;
+  height: 28px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+/* 已签日期：主题色实心白字 */
+.sign-cal-cell.signed {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 500;
+}
+/* 今天：主题色描边 */
+.sign-cal-cell.today {
+  box-shadow: inset 0 0 0 1.5px var(--primary);
+  color: var(--primary);
+}
+/* 今天已签：实心 + 浅色光环 */
+.sign-cal-cell.signed.today {
+  box-shadow: 0 0 0 2px var(--primary-light);
+  color: #fff;
+}
+/* 未来日期：置灰降权（不可签） */
+.sign-cal-cell.future {
+  color: var(--text-hint);
+  opacity: 0.55;
+}
+
+/* === Note detail === */
+.detail-header { padding: 16px; background: var(--surface); }
+.detail-title { font-size: 18px; font-weight: 600; line-height: 1.5; }
+.detail-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.detail-author-info { flex: 1; }
+.detail-author-name { font-size: 14px; font-weight: 500; }
+.detail-author-time { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.detail-content {
+  padding: 16px;
+  background: var(--surface);
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 16px;
+  background: var(--surface);
+  margin-top: 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: color .2s;
+}
+.action-btn.liked { color: var(--danger); }
+.action-btn.followed { color: var(--primary); }
+
+.detail-section {
+  padding: 16px;
+  background: var(--surface);
+  margin-top: 8px;
+}
+.detail-section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.like-avatars {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.like-avatars img {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--border);
+  border: 2px solid #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+/* === Comment list === */
+.comment-list {
+  padding: 0;
+}
+.comment-item {
+  display: flex;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.comment-item:last-child {
+  border-bottom: none;
+}
+/* 置顶评论高亮背景 */
+.comment-item.comment-pinned {
+  background: var(--primary-light);
+  margin: 0 -16px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.comment-body {
+  flex: 1;
+  min-width: 0;
+}
+.comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.comment-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+/* 【评论功能的实现】评论头像/昵称可点击 → 用户主页 */
+.comment-avatar-clickable {
+  cursor: pointer;
+}
+.comment-name-clickable {
+  cursor: pointer;
+  transition: color .15s;
+}
+.comment-name-clickable:active {
+  color: var(--primary);
+}
+.comment-time {
+  font-size: 11px;
+  color: var(--text-hint);
+}
+.comment-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  word-break: break-word;
+}
+/* 【评论功能的实现】置顶徽标 */
+.comment-pin-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--surface);
+  border: 1px solid var(--primary);
+  border-radius: 3px;
+  padding: 0 6px;
+  line-height: 16px;
+}
+/* 【评论功能的实现】回复到 xx */
+.comment-reply-to {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+/* 【评论功能的实现】操作按钮行（回复/删除/置顶） */
+.comment-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+.comment-action-btn {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 2px 0;
+  transition: color .15s;
+}
+.comment-action-btn:active {
+  color: var(--primary);
+}
+.comment-delete-btn {
+  color: var(--danger);
+}
+.comment-delete-btn:active {
+  color: var(--danger);
+}
+/* 【评论功能的实现】回复列表（缩进显示） */
+.comment-reply-list {
+  padding-left: 42px;
+  border-bottom: 1px solid var(--border-light);
+}
+.comment-reply-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.comment-reply-item:last-child {
+  border-bottom: none;
+}
+/* 【评论功能的实现】回复提示条 */
+.comment-reply-hint {
+  padding: 6px 16px;
+  background: var(--primary-light);
+  font-size: 13px;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.comment-reply-cancel {
+  font-size: 16px;
+  color: var(--text-secondary);
+  padding: 0 4px;
+  line-height: 1;
+}
+
+/* === Comment placeholder === */
+.comment-box {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+}
+.comment-box input {
+  flex: 1;
+  background: var(--bg);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+.comment-placeholder { padding: 20px; text-align: center; color: var(--text-hint); font-size: 13px; }
+
+/* === Login page === */
+.login-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--surface);
+}
+.login-logo { font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+.login-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 32px; }
+.login-form { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 14px; }
+.login-form .phone-row { display: flex; gap: 10px; }
+.login-form .phone-row input { flex: 1; }
+.login-form .code-btn {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.login-form .code-btn:disabled { background: #ccc; }
+.login-hint { margin-top: 20px; font-size: 12px; color: var(--text-hint); text-align: center; line-height: 1.6; }
+
+/* === Login tabs === */
+.login-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 320px;
+}
+.login-tab {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  text-align: center;
+  transition: all .2s;
+}
+.login-tab.active {
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* === Password input === */
+.password-wrap {
+  position: relative;
+  width: 100%;
+}
+.password-wrap input {
+  padding-right: 44px;
+}
+.pwd-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-hint);
+  transition: color .2s;
+}
+.pwd-toggle:active { color: var(--text-secondary); }
+
+/* === Register link === */
+.login-register-link {
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.login-register-link a {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* === Register page === */
+.register-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 24px 40px;
+  background: var(--surface);
+  min-height: calc(100vh - var(--safe-bottom));
+  min-height: calc(100dvh - var(--safe-bottom));
+}
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+/* === Edit page === */
+.edit-form { padding: 16px; }
+.edit-form .form-group { margin-bottom: 14px; }
+.edit-form label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+/* 手机端体验：字段分组卡片（内容/设置/图片三组，与 trip-edit 表单卡语言统一） */
+.edit-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.edit-card .form-group:last-child {
+  margin-bottom: 0;
+}
+.image-upload-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.image-upload-item {
+  width: 80px; height: 80px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  position: relative;
+  background: var(--border);
+}
+.image-upload-item img { width: 100%; height: 100%; object-fit: cover; }
+.image-upload-item .img-remove {
+  position: absolute;
+  top: 2px; right: 2px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+}
+/* 添加图片按钮：虚线框 + 相机图标 + 文案（触达面积大、意图明确） */
+/* label.image-upload-add 需压过 .edit-form/.trip-edit-form label 的 display:block（同特异性靠源顺序） */
+label.image-upload-add {
+  width: 80px; height: 80px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-hint);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+label.image-upload-add span {
+  font-size: 10px;
+  line-height: 1;
+}
+label.image-upload-add:active {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* === Follow/Feed note card === */
+.feed-note-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.feed-note-card .note-img img { width: 100%; max-height: 260px; object-fit: cover; }
+.feed-note-card .note-body { padding: 12px; }
+.feed-note-card .note-title { font-size: 15px; font-weight: 500; line-height: 1.5; }
+.feed-note-card .note-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.feed-note-card .note-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* === Attraction detail === */
+.attraction-detail .detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 14px 16px;
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.attraction-detail .detail-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.attraction-detail .detail-score { color: var(--warning); font-weight: 500; }
+.attraction-detail .detail-price { color: var(--danger); font-weight: 500; }
+/** 【景点详情的实现】免费标签：与主页卡片一致的绿色"免费"文字 */
+.attraction-detail .card-free {
+  color: var(--success);
+  font-weight: 500;
+}
+
+/* === Search results === */
+.search-results .result-header {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* === Section title === */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 16px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* === Responsive image fallback === */
+img[src=""], img:not([src]) { opacity: 0; }
+
+/* === Utility === */
+.text-center { text-align: center; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.hidden { display: none !important; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+
+/* === User Profile Page === */
+.user-profile {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+}
+.user-profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.user-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+.user-profile-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.user-profile-bio {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+.user-profile-city {
+  font-size: 12px;
+  color: var(--text-hint);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.user-stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0 2px;
+  text-align: center;
+}
+.user-stat-item {
+  cursor: default;
+}
+.user-stat-item[data-type] {
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.user-stat-item[data-type]:active {
+  opacity: 0.7;
+}
+.user-stat-num {
+  font-size: 16px;
+  font-weight: 600;
+  display: block;
+  color: var(--text);
+}
+.user-stat-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+/* 他人主页操作区：主次分明的两个胶囊按钮 */
+.user-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+}
+.user-act-btn {
+  min-width: 96px;
+  height: 34px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+/* 关注：主操作，实心主题色 */
+.user-act-follow {
+  background: var(--primary);
+  color: #fff;
+}
+.user-act-follow:active {
+  background: var(--primary-dark);
+}
+/* 已关注：弱化成浅灰，避免抢主视觉 */
+.user-actions .follow-btn.followed {
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: none;
+}
+/* 私信：次操作，白底细边 */
+.user-act-chat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.user-act-chat:active {
+  background: var(--bg);
+}
+
+/* === Follows List === */
+.follows-list {
+  padding: 0 16px;
+}
+.follows-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background .15s;
+}
+.follows-item:active {
+  background: var(--bg);
+}
+.follows-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.follows-item-name {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* === Note Delete Button === */
+.note-delete-btn {
+  color: var(--danger) !important;
+  font-size: 13px;
+}
+.my-note-item {
+  position: relative;
+}
+.my-note-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--danger);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 2;
+  cursor: pointer;
+  transition: background .15s;
+}
+.my-note-delete:active {
+  background: rgba(248, 113, 113, 0.25);
+}
+
+/* === 【用户主页的实现】小红书样式：背景大图 header + 头像悬浮叠加 === */
+/* 头部容器 — relative 包裹背景 + 头像信息区 */
+.user-header {
+  position: relative;
+  background: var(--surface);
+}
+/* 背景大图区 — 全宽 118px cover，默认渐变回退 */
+.user-bg {
+  width: 100%;
+  height: 118px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--primary-light);
+  background-image: linear-gradient(135deg, var(--primary-light), #c8e6e0);
+}
+/* 【用户主页的实现】小红书悬浮头像：负 margin 叠加在背景底部 + 白边 + 阴影 */
+.avatar-xhs {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: var(--shadow-md);
+  margin-top: -32px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  position: relative;
+  z-index: 2;
+  background: var(--border);
+}
+/* 头像下方昵称/简介/城市 — 居中排版 */
+.user-header-info {
+  padding: 8px 16px 16px;
+  text-align: center;
+}
+.user-header-info .user-profile-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.user-header-info .user-profile-bio {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.user-header-info .user-profile-city {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 4px;
+}
+/* 【用户主页的实现】我的页背景图头部（profile.js 复用 user-bg + avatar-xhs） */
+.profile-cover {
+  background: var(--surface);
+}
+.profile-cover-name {
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 4px 16px 2px;
+}
+/* 【个人中心的实现】我的页简介文字 */
+.profile-cover-bio {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-hint);
+  padding: 0 16px 8px;
+  line-height: 1.4;
+}
+
+/* === 【个人中心的实现】左侧抽屉侧边栏 + 遮罩 + 菜单按钮 === */
+/* 菜单按钮：page-header 左上角，无背景无边框，触摸反馈 */
+.menu-btn {
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text);
+  border-radius: var(--radius-xs);
+  transition: background 0.15s;
+}
+.menu-btn:active {
+  background: var(--bg);
+}
+/* 遮罩：全屏半透明黑色背景，默认隐藏，点击关闭抽屉 */
+/* 遮罩：与 city-sheet-mask/barcode-mask 同构（常驻 DOM + opacity 切换，修复 display 切换模式下遮罩不渲染的问题） */
+.side-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.side-mask.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* 抽屉侧边栏：固定左侧，transform translateX 从左侧滑入/滑出 */
+.side-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  max-width: 80vw;
+  z-index: 1210;
+  background: var(--surface);
+  box-shadow: 2px 0 16px rgba(0,0,0,0.15);
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.side-drawer.show {
+  transform: translateX(0);
+}
+/* 抽屉头部：标题 + 关闭按钮 */
+.side-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.side-drawer-close {
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+.side-drawer-close:active {
+  background: var(--bg);
+}
+/* 抽屉菜单项 */
+.side-drawer-item {
+  padding: 14px 20px;
+  font-size: 15px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.side-drawer-item:active {
+  background: var(--bg);
+}
+.side-drawer-item:last-child {
+  border-bottom: none;
+}
+
+/* === User Self Actions (编辑资料/浏览记录/客服/我的收藏 按钮) — user.js 他人主页仍使用 === */
+.user-self-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 12px 0 0;
+  flex-wrap: wrap;
+}
+
+/* === 【用户主页的实现】主页 tab 栏（游记|评论|收藏|赞过）=== */
+/* 4 栏 tab：与 fav-tabs/login-tabs 设计一致（圆角药丸 + 选中态白底阴影） */
+.user-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin: 12px 16px 0;
+}
+.user-tab {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.user-tab.active {
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* === 【用户主页的实现】tab 内容区包装 === */
+.user-tab-content {
+  background: var(--bg);
+  min-height: 200px;
+}
+
+/* === 【用户主页的实现】评论 tab 列表（评论卡片）=== */
+.user-comment-list {
+  padding: 0;
+}
+.user-comment-item {
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.user-comment-item:active {
+  background: var(--bg);
+}
+/* 评论内容 */
+.user-comment-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  word-break: break-word;
+  margin-bottom: 8px;
+}
+/* 所属游记标题（可点击） */
+.user-comment-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.user-comment-note span {
+  color: var(--primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+/* 评论时间 */
+.user-comment-time {
+  font-size: 11px;
+  color: var(--text-hint);
+}
+
+/* === Edit Profile Form (编辑资料页) === */
+.edit-profile-form {
+  padding: 16px;
+}
+.edit-profile-form .form-group {
+  margin-bottom: 18px;
+}
+.edit-profile-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+/* === Avatar Upload (头像上传) === */
+.avatar-upload-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+}
+.avatar-upload-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--border);
+  border: 2px solid var(--border-light);
+  transition: border-color .2s;
+}
+.avatar-upload-wrap:active .avatar-upload-preview {
+  border-color: var(--primary);
+}
+.avatar-upload-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* === Background Upload (背景图上传感) === */
+.bg-upload-wrap {
+  width: 100%;
+  height: 120px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg);
+  border: 1.5px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .2s;
+}
+.bg-upload-wrap:active {
+  border-color: var(--primary);
+}
+.bg-upload-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bg-upload-placeholder {
+  font-size: 14px;
+  color: var(--text-hint);
+  text-align: center;
+}
+
+/* === Gender Radio (性别选择) === */
+.gender-radio-group {
+  display: flex;
+  gap: 20px;
+}
+.gender-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+}
+.gender-radio input[type="radio"] {
+  width: auto;
+  accent-color: var(--primary);
+}
+
+/* === 【隐私设置的实现】隐私设置页：分组卡片 + 单行开关（去掉重复说明行） === */
+.privacy-page {
+  padding: 16px;
+}
+.privacy-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.privacy-card-head {
+  padding: 12px 16px 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.privacy-card-body {
+  padding: 8px 16px 14px;
+}
+.privacy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+}
+.privacy-row + .privacy-row {
+  border-top: 1px solid var(--border-light);
+}
+.privacy-row-label {
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* === Privacy Toggles / Switch (隐私开关) === */
+.privacy-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.privacy-toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* Toggle switch（iOS 风格） */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #d1d5db;
+  border-radius: 28px;
+  transition: background .25s;
+  cursor: pointer;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 24px;
+  width: 24px;
+  left: 2px;
+  bottom: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .25s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--primary);
+}
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* === 【隐私设置的实现】私信模式 segmented 三选控件 === */
+/* 三选按钮组：flex 横向排列，圆角药丸容器 */
+.dm-mode-segmented {
+  display: flex;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  overflow: hidden;
+}
+/* 单个分段按钮：等宽居中，圆角 */
+.dm-mode-seg {
+  flex: 1;
+  padding: 8px 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  text-align: center;
+  transition: all .2s;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+/* 选中态：白底 + 主题色 + 阴影 */
+.dm-mode-seg.active {
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+.dm-mode-seg:active {
+  opacity: 0.8;
+}
+
+/* === 【游记编辑的实现】详情页编辑按钮样式 === */
+/* 编辑按钮：与操作按钮行其他按钮一致 */
+.note-edit-btn {
+  color: var(--primary) !important;
+  font-size: 14px;
+}
+
+/* === Browse List (浏览记录) === */
+.browse-list {
+  padding: 0;
+}
+.browse-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background .15s;
+}
+.browse-item:active {
+  background: var(--bg);
+}
+.browse-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--border);
+}
+.browse-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.browse-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: var(--bg);
+  color: var(--text-hint);
+}
+.browse-info {
+  flex: 1;
+  min-width: 0;
+}
+.browse-title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 6px;
+}
+.browse-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.browse-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.browse-badge-note {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.browse-badge-attraction {
+  background: #fef3c7;
+  color: #d97706;
+}
+.browse-time {
+  font-size: 12px;
+  color: var(--text-hint);
+}
+
+/* === 【消息中心的实现】消息列表 === */
+.message-list {
+  padding: 0;
+}
+.message-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background .15s;
+}
+.message-item:active {
+  background: var(--bg);
+}
+/* 未读消息高亮：左侧色带 */
+.message-item.unread {
+  border-left: 3px solid var(--primary);
+  padding-left: 13px;
+}
+.message-item .message-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: 50%;
+}
+.message-item .message-info {
+  flex: 1;
+  min-width: 0;
+}
+.message-item .message-content {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  word-break: break-word;
+}
+.message-item .message-time {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 4px;
+}
+
+/* === 【消息中心的实现】tabbar 红点角标 === */
+.tabbar-icon-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.tabbar-badge {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  width: 8px;
+  height: 8px;
+  background: var(--danger);
+  border-radius: 50%;
+  border: 1.5px solid var(--surface);
+}
+
+/* === 【AI客服聊天页的实现】聊天页整体布局 === */
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  /* 手机端体验：tabbar 已隐藏（no-tabbar），高度只扣底部安全区——聊天区满屏到底 */
+  height: calc(100vh - var(--safe-bottom));
+  height: calc(100dvh - var(--safe-bottom));
+  background: var(--bg);
+}
+/* 消息列表区：flex-1 填充剩余空间，可滚动 */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+/* 聊天气泡基础样式 */
+.chat-bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+  animation: chatBubbleIn .25s ease-out;
+}
+@keyframes chatBubbleIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* 用户气泡：右对齐，主题色背景 + 白色文字 */
+.chat-bubble-user {
+  align-self: flex-end;
+  background: var(--primary);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+/* 客服气泡：左对齐，白色背景 + 阴影 */
+.chat-bubble-support {
+  align-self: flex-start;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  border-bottom-left-radius: 4px;
+}
+/* "思考中…"loading 气泡 */
+.chat-bubble-loading {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.chat-loading-dots .dot1,
+.chat-loading-dots .dot2,
+.chat-loading-dots .dot3 {
+  animation: chatDotPulse 1.4s infinite both;
+}
+.chat-loading-dots .dot2 { animation-delay: 0.2s; }
+.chat-loading-dots .dot3 { animation-delay: 0.4s; }
+@keyframes chatDotPulse {
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+/* 输入栏：relative 承载表情面板绝对定位（chat.js 私信页 + support.js 客服页共用） */
+.chat-input-bar {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+/* 表情按钮：唤起表情面板 */
+.chat-emoji-btn {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  padding: 4px 2px;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.chat-emoji-btn:active {
+  transform: scale(0.92);
+  transition: transform 0.1s;
+}
+/* 表情面板：吸附输入栏上方，8 列网格，默认隐藏 */
+.chat-emoji-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  z-index: 60;
+  display: none;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+  padding: 10px 12px;
+  max-height: 208px;
+  overflow-y: auto;
+}
+.chat-emoji-panel.show {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px 4px;
+}
+/* 单个表情格：点选插入输入框 */
+.chat-emoji-item {
+  border: none;
+  background: none;
+  padding: 4px 0;
+  font-size: 22px;
+  line-height: 1.2;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.chat-emoji-item:active {
+  background: var(--bg);
+}
+.chat-input-bar input {
+  flex: 1;
+  background: var(--bg);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  /* 16px：iOS Safari 聚焦时 font-size<16px 会触发页面自动缩放，干扰键盘体验 */
+  font-size: 16px;
+}
+
+/* === 【弹窗组件的实现】自定义确认对话框 === */
+/* 半透明遮罩：覆盖全屏，居中容器 */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0);
+  transition: background 0.2s;
+}
+.modal-mask.show {
+  background: rgba(0,0,0,0.45);
+}
+/* 圆角卡片：白色底 + 阴影 + 入场动画 */
+.modal-card {
+  width: 290px;
+  max-width: 85vw;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.modal-mask.show .modal-card {
+  opacity: 1;
+  transform: scale(1);
+}
+/* 标题 */
+.modal-title {
+  padding: 20px 20px 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text);
+}
+/* 正文 */
+.modal-body {
+  padding: 12px 20px 20px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+/* 按钮行 */
+.modal-footer {
+  display: flex;
+  border-top: 1px solid var(--border-light);
+}
+.modal-btn {
+  flex: 1;
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  transition: background 0.15s;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.modal-btn:active {
+  background: var(--bg);
+}
+/* 取消按钮 */
+.modal-btn-cancel {
+  color: var(--text-secondary);
+  border-right: 1px solid var(--border-light);
+}
+/* 确认按钮：主题色 */
+.modal-btn-confirm {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* === 【头像交互的实现】放大头像预览弹窗 === */
+/* 复用 modal-mask 动画模式：半透明遮罩 + 居中卡片 + fadeIn/Out */
+.avatar-preview-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0);
+  transition: background 0.2s;
+}
+.avatar-preview-mask.show {
+  background: rgba(0,0,0,0.55);
+}
+/* 预览卡片：白底圆角 + 入场缩放动画 */
+.avatar-preview-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 260px;
+  max-width: 80vw;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 30px 24px 20px;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.25s, transform 0.25s;
+}
+.avatar-preview-mask.show .avatar-preview-card {
+  opacity: 1;
+  transform: scale(1);
+}
+/* 大图：200px 圆角方形 */
+.avatar-preview-img {
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  background: var(--bg);
+  margin-bottom: 16px;
+}
+/* 昵称 */
+.avatar-preview-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  text-align: center;
+}
+/* 自己标签：主题色徽标 */
+.avatar-preview-self-tag {
+  font-size: 12px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 12px;
+  padding: 4px 14px;
+  margin-bottom: 14px;
+}
+/* 关闭按钮 */
+.avatar-preview-close {
+  margin-top: 8px;
+  padding: 10px 40px;
+  font-size: 15px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.avatar-preview-close:active {
+  background: var(--border);
+}
+
+/* === 【消息中心的实现】三分类圈导航 === */
+/* 分类圈容器：三个圆形卡片平铺 */
+.msg-categories {
+  display: flex;
+  gap: 12px;
+  padding: 16px 16px 8px;
+  justify-content: space-around;
+}
+/* 单个分类圈 */
+.msg-cat-item {
+  position: relative; /* 【分类未读角标的实现】作为 .msg-cat-badge 绝对定位的参照容器 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.msg-cat-item:active {
+  transform: scale(0.95);
+}
+/* 【分类未读角标的实现】三分类圈未读角标：红色圆点/数字，绝对定位在圆形图标右上角
+ * 实现细节：
+ * - .msg-cat-item 为 position:relative 参照；角标 top:-2px + right:-2px 贴在圆形图标右上角（参考 .tabbar-badge 定位）
+ * - 默认 16px 圆点显示 1-9 数字；未读 ≥10 时加 .msg-cat-badge-lg 类加宽为胶囊形（"9+"/"99+"）
+ * - 白字、红色背景（--danger），与 tabbar 消息红点同一色系；未读 0 时不输出该元素（直接隐藏） */
+.msg-cat-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  background: var(--danger);
+  border-radius: 8px;
+  border: 1.5px solid var(--surface);
+  z-index: 1;
+}
+.msg-cat-badge-lg {
+  min-width: 20px;
+  border-radius: 10px;
+  padding: 0 4px;
+}
+/* 圆形图标区 */
+.msg-cat-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.2s;
+}
+.msg-cat-item.active .msg-cat-circle {
+  box-shadow: 0 0 0 2px var(--primary), var(--shadow-md);
+}
+/* 分类下方文字 */
+.msg-cat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.msg-cat-item.active .msg-cat-label {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* === 【收藏功能的实现】收藏列表页 === */
+/* 类型 tab 切换 */
+.fav-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin: 0 16px 12px;
+}
+.fav-tab {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.fav-tab.active {
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+/* 收藏列表项 */
+.fav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fav-item:active {
+  background: var(--bg);
+}
+.fav-item-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-xs);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--border);
+}
+.fav-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.fav-item-title {
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fav-item-time {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 4px;
+}
+
+/* === 【收藏功能的实现】详情页收藏按钮 === */
+.fav-btn .fav-icon-filled {
+  display: none;
+}
+.fav-btn.favorited .fav-icon-filled {
+  display: inline;
+}
+.fav-btn.favorited .fav-icon-outline {
+  display: none;
+}
+.fav-btn.favorited {
+  color: var(--primary);
+}
+
+/* === 【收藏功能的实现】我的页菜单入口 === */
+.profile-menu {
+  background: var(--surface);
+  margin: 0 16px;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.profile-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.profile-menu-item:last-child {
+  border-bottom: none;
+}
+.profile-menu-item:active {
+  background: var(--bg);
+}
+
+/* === 【私信功能的实现】消息页私信入口行 === */
+/* 私信入口行：flex 横向排列，图标+文字+箭头，点击跳转 #/chats */
+.msg-chat-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background .15s;
+}
+.msg-chat-entry:active {
+  background: var(--bg);
+}
+.msg-chat-entry-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.msg-chat-entry-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+.msg-chat-entry svg:last-child {
+  flex-shrink: 0;
+}
+
+/* === 【私信功能的实现】聊天页互关提示条 === */
+/* 非互关时显示轻提示：浅青背景 + 小字号，不阻断聊天 */
+.chat-mutual-hint {
+  padding: 8px 16px;
+  background: var(--primary-light);
+  font-size: 12px;
+  color: var(--primary-dark);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* === 【私信功能的实现】聊天气泡内的时间标签 === */
+/* 时间显示在气泡内容下方，小字号灰色 */
+.chat-bubble-time {
+  font-size: 10px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
+  text-align: right;
+}
+.chat-bubble-support .chat-bubble-time {
+  color: var(--text-hint);
+}
+
+/* === 【私信功能的实现】会话列表 === */
+/* 会话列表项：头像 + 信息区（昵称+时间 top、消息摘要+未读红点 bottom） */
+.chat-session-list {
+  padding: 0;
+}
+.chat-session-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background .15s;
+}
+.chat-session-item:active {
+  background: var(--bg);
+}
+/* 未读会话轻微高亮 */
+.chat-session-item.chat-session-unread {
+  background: #fafffe;
+}
+.chat-session-info {
+  flex: 1;
+  min-width: 0;
+}
+.chat-session-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.chat-session-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+.chat-session-time {
+  font-size: 11px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
+.chat-session-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chat-session-msg {
+  font-size: 13px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+/* 未读红点角标：主题色圆形背景 + 白色数字 */
+.chat-unread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+  border-radius: 9px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* === 【会话左滑的实现】微信式左滑操作——滑动容器+隐藏操作按钮 === */
+/* 外层容器：overflow:hidden 隐藏右侧操作区，border-bottom 分隔线 */
+.chat-session-swipe {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+}
+/* 内层会话项：touch-action:pan-y 允许垂直滚动、水平拖拽交 JS 处理；transform 平移露出操作区 */
+.chat-session-swipe .chat-session-item {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  transition: transform 0.25s ease;
+  touch-action: pan-y;
+}
+/* 操作区：绝对定位在右侧，flex 横向排列两个按钮，z-index:0 默认被 item 遮挡 */
+.chat-session-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  z-index: 0;
+}
+/* 操作按钮通用样式：等宽 70px、白色文字、无边框、字体居中 */
+.chat-session-action-btn {
+  width: 70px;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.chat-session-action-btn:active {
+  opacity: 0.8;
+}
+.chat-session-action-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+/* 置顶/取消置顶按钮：主色背景 */
+.chat-session-pin-btn {
+  background: var(--primary);
+}
+/* 删除按钮：红色背景 */
+.chat-session-del-btn {
+  background: var(--danger);
+}
+
+/* 桌面断点（≥768px）：按钮字体/尺寸保持正常 */
+@media (min-width: 768px) {
+  .chat-session-action-btn {
+    font-size: 15px;
+  }
+}
+
+/* === 【城市选择器的实现】城市选择入口 + 底部抽屉（替代原城市 chip 标签行） === */
+/* 入口条：定位图钉 + 选中城市 chips（全部展开可换行）+ 展开箭头 */
+.city-picker-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 16px 10px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  color: var(--primary);
+  transition: background 0.15s;
+}
+.city-picker-bar:active {
+  background: var(--bg);
+}
+/* chips 区：flex 换行，所有选中城市完整可见（用户明确要求"选了哪些都要展开"） */
+.city-picker-chips {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.city-picker-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+/* chip 上的 × 移除按钮：小圆钮，触达区放大约 26px */
+.city-picker-chip-x {
+  width: 18px;
+  height: 18px;
+  margin: -2px -2px -2px 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+.city-picker-chip-x:active {
+  background: var(--primary);
+  color: #fff;
+}
+.city-picker-arrow {
+  font-size: 10px;
+  color: var(--text-hint);
+  padding: 6px 0;
+}
+/* 底部抽屉：遮罩渐显 + 面板自底部滑入；手机端优先布局 */
+.city-sheet-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  transition: background 0.25s;
+}
+.city-sheet-mask.show {
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+}
+.city-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 与 app-container 同宽：手机端全宽，桌面宽屏下居中限宽，保持手机容器视觉一致 */
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--surface);
+  border-radius: 16px 16px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.25s;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  max-height: 72vh;
+  overflow-y: auto;
+}
+.city-sheet-mask.show .city-sheet {
+  transform: translateY(0);
+}
+.city-sheet-head {
+  position: relative;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  padding-right: 32px;
+}
+.city-sheet-sub {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--text-hint);
+  font-weight: 400;
+}
+/* 右上角关闭按钮：加大触达区（28px） */
+.city-sheet-close {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+/* 城市宫格：三列等宽（手机端友好，触达面积大），选中绿底白字 + 序号徽标 */
+.city-sheet-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.city-chip {
+  position: relative;
+  flex: 0 0 calc(33.33% - 6px);
+  text-align: center;
+  padding: 11px 0;
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border: 1px solid var(--border-light);
+  white-space: nowrap;
+}
+.city-chip.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 500;
+}
+.city-chip-badge {
+  position: absolute;
+  top: -5px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-dark);
+  color: #fff;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* 抽屉底部操作行：重置（灰）+ 确定（主色），42px 高加大触达 */
+.city-sheet-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.city-sheet-btn {
+  flex: 1;
+  height: 42px;
+  border-radius: 999px;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font);
+}
+.city-sheet-btn.ghost {
+  background: var(--bg);
+  color: var(--text-secondary);
+}
+.city-sheet-btn.primary {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* === 【地图数据的实现】统一隐藏高德地图左下角 Logo 与版权标注 ===
+   全站地图（旅行页 / 行程详情 / 足迹地图）共用；如正式商用请先确认高德授权条款 */
+.amap-logo,
+.amap-copyright {
+  display: none !important;
+}
+
+/* === 【旅行功能的实现】旅行页 — 高德地图容器 === */
+/* 地图区：贴边通栏；高德 JS API 2.0 原生矢量底图（GCJ-02 与景点坐标同系无偏移） */
+.map-container {
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  margin: 0;
+  background: #e8ecee;
+}
+/* 【旅行页的实现】旅行页地图高度自适应视口：页头移除（去顶部空白）后地图作为页面主体撑满首屏
+   （附近景点 ~150 + 底部 tabbar 占位 ~72 的余量），下限 340 保持小屏可用，上限 600 防超高分屏失衡 */
+#travel-map {
+  height: clamp(340px, calc(100vh - 236px), 600px);
+  height: clamp(340px, calc(100dvh - 236px), 600px);
+}
+/* 悬浮层定位基准：路线模式按钮 / 路线浮条 */
+.map-wrap {
+  position: relative;
+  /* 【视觉对齐】地图区域建立独立层叠上下文并压到 40：
+     路线模式(300)/定位(300)/卫星(180) 按钮内部 z-index 再高，
+     也只会在该上下文内比较，不会盖过页面头部(50)、tabbar(100) 和手机外壳(140)；
+     页面滚动时按钮会随地图一起被头部/状态栏正确遮住，不会从边框外露出来 */
+  isolation: isolate;
+  z-index: 40;
+}
+/* 自定义景点标记：主绿圆点 + 白环 + 投影（高德 Marker content） */
+.tv-pin {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(11, 92, 80, 0.45);
+}
+/* 【地图路线规划的实现】路线序号标记：主题绿实心圆 + 白色序号（覆盖 .tv-pin 尺寸样式） */
+.tv-pin.tv-pin-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--primary);
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  font-style: normal;
+  box-sizing: border-box;
+}
+/* 高德 InfoWindow 气泡内容：主题字色 + 详情链接 */
+.amap-pin-pop {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.amap-pin-pop b { font-size: 14px; }
+.amap-pin-pop a {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* === 【地图路线规划的实现】旅行页路线模式 UI === */
+/* 路线模式开关：右上角悬浮胶囊按钮 */
+.route-mode-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 300;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(14, 159, 138, 0.35);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+.route-mode-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+/* 路线浮条：地图底部悬浮卡片（停靠点芯片 + 方式切换 + 摘要） */
+.route-bar {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 300;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 10px 12px;
+  backdrop-filter: blur(6px);
+}
+.route-bar-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.route-bar-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.route-bar-hint { font-size: 11px; color: var(--text-hint); }
+.route-stops { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.route-stops:empty { display: none; }
+.route-stop-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 3px 3px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  font-size: 12px;
+  color: var(--text);
+}
+.route-stop-chip i {
+  font-style: normal;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.route-stop-x { font-weight: 400; color: var(--text-hint); padding: 0 2px; cursor: pointer; }
+.route-summary { margin-top: 8px; font-size: 12px; color: var(--text-secondary); }
+.route-summary:empty { display: none; }
+.route-summary b { color: var(--primary); font-size: 14px; }
+.route-legs { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 4px; }
+.route-leg { font-size: 11px; color: var(--text-hint); }
+.route-error { color: var(--danger); }
+.route-planning { color: var(--text-hint); }
+.route-bar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.route-mode-tabs { display: flex; gap: 6px; }
+.route-mode-tab {
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  cursor: pointer;
+}
+.route-mode-tab.active { background: var(--primary); color: #fff; font-weight: 500; }
+.route-clear { font-size: 12px; color: var(--danger); padding: 4px 8px; cursor: pointer; }
+.route-bar-tools { display: flex; align-items: center; gap: 6px; }
+/* 【图上选点的实现】选点模式激活态：橙色区分于驾车/步行 tab */
+.route-ab-tab.active { background: #FF6B35; color: #fff; }
+/* 芯片起终点角色徽章 */
+.route-role { font-style: normal; font-size: 10px; padding: 1px 4px; border-radius: 4px; color: #fff; }
+.role-start { background: var(--primary); }
+.role-end { background: #FF6B35; }
+/* 图上终点标记：橙色（覆盖序号标记的绿底） */
+.tv-pin-num.tv-pin-end { background: #FF6B35; }
+
+/* === 【我在哪的实现】定位按钮 + 蓝点呼吸标记 === */
+/* 回到我的位置：路线按钮下方圆形准星按钮 */
+.locate-btn {
+  position: absolute;
+  top: 52px;
+  right: 10px;
+  z-index: 300;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--primary);
+  border: 1px solid rgba(14, 159, 138, 0.35);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.locate-btn:active { transform: scale(0.92); }
+/* 我的位置蓝点 + 外圈呼吸光环（CSS 动画模拟系统定位点） */
+.locate-dot {
+  position: relative;
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #1A73E8;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(26, 115, 232, 0.5);
+  box-sizing: border-box;
+}
+.locate-dot i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  background: rgba(26, 115, 232, 0.25);
+  animation: locatePulse 1.6s ease-out infinite;
+}
+@keyframes locatePulse {
+  0% { transform: scale(0.4); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .locate-dot i { animation: none; opacity: 0.5; }
+}
+
+/* === 【地图路线规划的实现】行程详情「本日路线」 === */
+.trip-day-route-btn {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 999px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.trip-day-route-area { margin: 10px 12px 4px; }
+.trip-day-route-summary {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+.trip-day-route-summary b { color: var(--primary); font-size: 14px; }
+.trip-day-map { border-radius: var(--radius-sm); overflow: hidden; }
+
+/* === 【旅游AI助手的实现】AI 助手全局悬浮入口 + 全屏对话页 === */
+/* 悬浮球：白底 + 主题色笑脸气泡图标，全站常驻右下角；tab 页停在 tabbar 上方 */
+.ai-fab {
+  position: fixed;
+  right: 14px;
+  bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 14px);
+  z-index: 90;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(14, 159, 138, 0.18);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: 0 6px 18px rgba(14, 159, 138, 0.18), 0 2px 6px rgba(17, 24, 39, 0.06);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.ai-fab:active {
+  transform: scale(0.93);
+  background: var(--primary-light);
+  box-shadow: 0 3px 10px rgba(14, 159, 138, 0.16);
+}
+/* 无 tabbar 页面：下移到 Home 条上方，避免悬在页面中间 */
+.ai-fab.fab-bare {
+  bottom: calc(var(--safe-bottom) + 22px);
+}
+/* 头部清空按钮（标题右侧） */
+.ai-clear {
+  position: absolute;
+  right: 14px;
+  font-size: 12px;
+  color: var(--text-hint);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+}
+/* 平台数据提示条 */
+.ai-banner {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 8px 12px 0;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+}
+/* 助手回复正文：保留换行（攻略的结构化分段） */
+.chat-bubble .ai-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 13px;
+  line-height: 1.65;
+}
+/* 流式输出中：光标闪烁 */
+.chat-bubble.streaming .ai-text::after {
+  content: '▍';
+  color: var(--primary);
+  animation: aiBlink 1s step-end infinite;
+}
+@keyframes aiBlink {
+  50% { opacity: 0; }
+}
+/* 【旅游AI助手的实现】工具执行进度行（气泡内"正在查询…"） */
+.ai-tool-status {
+  font-size: 11px;
+  color: var(--text-hint);
+  background: var(--bg);
+  border-radius: var(--radius-xs);
+  padding: 4px 8px;
+  margin-bottom: 6px;
+}
+/* 【Agent架构升级】工具执行时间线（SSE v2 结构化 tool 事件：running 旋转 → ✓/✗ + 耗时） */
+.ai-steps { margin-bottom: 6px; display: flex; flex-direction: column; gap: 4px; }
+.ai-step {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-hint);
+  background: var(--bg); border-radius: var(--radius-xs); padding: 4px 8px;
+}
+.ai-step-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-step-spin {
+  width: 10px; height: 10px; flex: none;
+  border: 2px solid var(--primary); border-top-color: transparent; border-radius: 50%;
+  animation: ai-step-spin .8s linear infinite;
+}
+@keyframes ai-step-spin { to { transform: rotate(360deg); } }
+.ai-step-mark { flex: none; font-weight: 600; font-size: 11px; }
+.ai-step-mark.ok { color: var(--primary); }
+.ai-step-mark.fail { color: #E5484D; }
+.ai-step-ms { margin-left: auto; opacity: .75; flex: none; }
+/* 【Agent架构升级】规划档长文渲染：段落/列表间距（renderMd 输出 p/ul/ol/li） */
+.ai-text p { margin: 0 0 6px; }
+.ai-text p:last-child { margin-bottom: 0; }
+.ai-text ul, .ai-text ol { margin: 2px 0 8px; padding-left: 18px; }
+.ai-text li { margin: 3px 0; }
+/* 规划档分节标题（## Day 1 等） */
+.ai-text .ai-md-h { margin: 10px 0 4px; font-weight: 700; font-size: 13.5px; color: var(--text); }
+.ai-text .ai-md-h:first-child { margin-top: 0; }
+/* 【影像地图切换的实现】全站地图 卫星/标准 切换按钮（左上角：旅行页右上角已被路线模式/准星按钮占用） */
+.trip-day-map, #travel-map, #footprint-map { position: relative; }
+/* 其他页面地图同样建立低层级上下文，卫星按钮滚动时不会盖到外壳外 */
+.trip-day-map,
+#footprint-map {
+  isolation: isolate;
+  z-index: 40;
+}
+.map-layer-toggle {
+  position: absolute; top: 8px; left: 8px; z-index: 180;
+  padding: 3px 10px; font-size: 11px; line-height: 1.4; color: var(--text);
+  background: rgba(255, 255, 255, .92); border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 999px; box-shadow: 0 1px 4px rgba(0, 0, 0, .12); cursor: pointer;
+}
+.map-layer-toggle.on { color: #fff; background: var(--primary); border-color: var(--primary); }
+/* 【景点聚合游记的实现】景点详情页「相关游记」区块（卡片：封面左 + 标题/作者右） */
+.attr-notes-count { font-size: 12px; font-weight: 400; color: var(--text-hint); }
+.attr-related-notes { display: flex; flex-direction: column; gap: 10px; }
+.attr-note-card {
+  display: flex; gap: 10px; align-items: center;
+  background: #fff; border-radius: 12px; padding: 8px; cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+}
+.attr-note-card:active { background: var(--bg); }
+.attr-note-cover { width: 84px; height: 64px; border-radius: 8px; object-fit: cover; flex: none; background: var(--bg); }
+.attr-note-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.attr-note-title { font-size: 13px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attr-note-meta { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+.attr-note-avatar { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; flex: none; background: var(--bg); }
+.attr-note-author { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attr-note-likes { margin-left: auto; flex: none; color: #f87171; }
+/* 相关游记「加载更多」按钮（分页追加） */
+.attr-notes-more {
+  display: block; width: 100%; margin-top: 10px; padding: 9px 0;
+  font-size: 12px; color: var(--primary); background: #fff;
+  border: 1px dashed var(--primary); border-radius: 10px; cursor: pointer;
+}
+.attr-notes-more:disabled { color: var(--text-hint); border-color: rgba(0,0,0,.1); cursor: default; }
+@media (prefers-reduced-motion: reduce) {
+  .chat-bubble.streaming .ai-text::after { animation: none; }
+  .ai-step-spin { animation: none; border-top-color: var(--primary); }
+}
+/* 欢迎态 */
+.ai-welcome { text-align: center; padding: 46px 24px 0; color: var(--text-secondary); }
+.ai-welcome-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 12px;
+  border-radius: 20px;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-welcome-title { font-size: 16px; font-weight: 600; color: var(--text); }
+.ai-welcome-hint { font-size: 12px; margin-top: 6px; color: var(--text-hint); line-height: 1.6; }
+/* 快捷问题 chips：输入栏上方横滚 */
+.ai-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 12px;
+  scrollbar-width: none;
+}
+.ai-chips::-webkit-scrollbar { display: none; }
+.ai-chip {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+}
+.ai-chip:active { background: var(--primary-light); color: var(--primary); }
+
+/* 地图加载失败占位 */
+.map-fallback {
+  width: 100%;
+  height: 300px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.map-fallback svg {
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+/* === 【旅行功能的实现】附近景点 — 标题行带实时计数，横向大图卡 === */
+.nearby-section {
+  background: var(--surface);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+/* 区块头：左侧标题、右侧实时信息（结构即信息：计数随地图移动而更新） */
+.tv-sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+}
+.tv-sec-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.tv-sec-meta {
+  font-size: 11px;
+  color: var(--text-hint);
+}
+.nearby-scroll {
+  display: flex;
+  gap: 10px;
+  padding: 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.nearby-scroll::-webkit-scrollbar {
+  display: none;
+}
+/* 附近景点卡片：大图占主体，距离徽章悬浮图左上（检票徽章隐喻），名字压图底部 */
+.nearby-card {
+  position: relative;
+  flex-shrink: 0;
+  width: 124px;
+  height: 96px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s;
+  background: var(--border);
+}
+.nearby-card:active {
+  transform: scale(0.96);
+}
+.nearby-card-img {
+  position: absolute;
+  inset: 0;
+}
+.nearby-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* 图上底部渐隐，保证白字可读 */
+.nearby-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44px;
+  background: linear-gradient(to top, rgba(23, 52, 74, 0.72), rgba(23, 52, 74, 0));
+}
+.nearby-card-info {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 7px;
+  z-index: 1;
+}
+.nearby-card-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+.nearby-card-dist {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 1px;
+}
+/* 距离徽章：图左上白底 pill */
+.nearby-card-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 1;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  padding: 2px 7px;
+  line-height: 1.3;
+}
+
+/* === 【旅行功能的实现】旅行计划 — 轻量行程卡 === */
+.trip-list {
+  padding: 0 16px;
+}
+/* 行程卡：圆角白卡 + 目的地图标 + 标题/日期信息 + 右箭头，去掉票根式装饰 */
+.trip-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.trip-card:active {
+  background: var(--bg);
+  border-color: var(--border);
+}
+/* 目的地图标：浅主题色圆角方块，仅作为视觉锚点 */
+.trip-card-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.trip-card-main {
+  flex: 1;
+  min-width: 0;
+}
+.trip-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 第二行：目的地 · 日期区间 · 天数胶囊 */
+.trip-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.trip-card-dest {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.trip-card-sep {
+  color: var(--text-hint);
+}
+.trip-card-date {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.trip-card-days {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.trip-card-chevron {
+  flex-shrink: 0;
+  color: var(--text-hint);
+}
+/* 空态：罗盘 + 虚线航线的线性插画 + 一句引导 */
+.trip-empty {
+  margin: 0 16px 10px;
+  padding: 28px 16px 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+.trip-empty svg {
+  margin-bottom: 10px;
+}
+.trip-empty-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+.trip-empty-hint {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 4px;
+}
+/* 新建按钮包裹 */
+.trip-new-btn-wrap {
+  padding: 16px;
+}
+
+.trip-edit-form .form-group {
+  margin-bottom: 14px;
+}
+.trip-edit-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+/* 基础信息卡：标题/目的地/日期/天数收进一张白卡（与 day-section 卡片语言统一） */
+.trip-edit-base {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px 0;
+  margin-bottom: 2px;
+}
+.trip-edit-base .form-group {
+  margin-bottom: 14px;
+}
+.trip-edit-base .form-group:last-child {
+  margin-bottom: 16px;
+}
+/* 日期行：flex 双列 */
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+/* 每日行程区（与行程详情 trip-detail-day 同纸感语言：装订条+主题行+虚线撕行） */
+.day-section {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px 12px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+/* 左侧主题色装订条 */
+.day-section::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--primary);
+}
+/* 天头部：第N天chip + 当日主题输入（同行，节省纵向空间） */
+.day-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-light);
+}
+.day-header .day-theme {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border-light);
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+/* 空态提示：无景点安排时显示（有安排即被兄弟选择器隐藏） */
+.day-empty-hint {
+  margin-top: 8px;
+  padding: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-hint);
+  text-align: center;
+}
+.day-items:not(:empty) + .day-empty-hint {
+  display: none;
+}
+/* 景点选择器：select + 添加按钮 */
+.day-attraction-picker {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.day-attraction-picker select {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  max-width: calc(100% - 70px);
+}
+/* 已选景点条目（虚线撕行，与详情页一致） */
+.day-items:not(:empty) {
+  margin-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+.day-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.day-item:last-child {
+  border-bottom: none;
+}
+.day-item-name {
+  font-size: 13px;
+  color: var(--text);
+  flex-shrink: 0;
+  min-width: 60px;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.day-item-note {
+  flex: 1;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+}
+.day-item-remove {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--danger);
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.day-item-remove:active {
+  background: rgba(248, 113, 113, 0.25);
+}
+/* 天数输入 */
+#trip-days {
+  width: 80px;
+}
+
+/* === 【旅行功能的实现】计划详情页 === */
+.trip-detail-header {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.trip-detail-title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+}
+.trip-detail-meta {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.trip-detail-item {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+/* 每日行程列表 */
+.trip-detail-days {
+  margin-bottom: 16px;
+}
+.trip-detail-day {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px 14px 20px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+/* 行程单纸感：左侧主题色装订条（与旅行页 trip-card 同语言） */
+.trip-detail-day::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--primary);
+}
+.trip-detail-day-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+.trip-detail-day-num {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 2px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.trip-detail-day-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 景点条目行 */
+.trip-detail-item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  /* 行程单纸感：条目间虚线分隔（仿纸质行程单撕行） */
+  border-bottom: 1px dashed var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.trip-detail-item-row:last-child {
+  border-bottom: none;
+}
+.trip-detail-item-row:active {
+  background: var(--bg);
+  margin: 0 -16px 0 -20px;
+  padding-left: 20px;
+  padding-right: 16px;
+}
+.trip-detail-item-img {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-xs);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--border);
+}
+.trip-detail-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.trip-detail-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.trip-detail-item-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.trip-detail-item-arrow {
+  flex-shrink: 0;
+}
+/* 日行程空态 */
+.trip-detail-day-empty {
+  font-size: 13px;
+  color: var(--text-hint);
+  text-align: center;
+  padding: 12px 0;
+}
+/* 删除按钮区 */
+.trip-detail-actions {
+  padding: 0 0 20px;
+}
+
+/* === 【旅行强化的实现】CSS 样式新增：星级打分、打卡、目的地 tab、关联景点、足迹 === */
+
+/* --- 星级打分 --- */
+.star-rating-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+}
+.star-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.star-rating {
+  display: flex;
+  gap: 2px;
+}
+.star-rating .star {
+  font-size: 26px;
+  color: var(--border);
+  cursor: pointer;
+  transition: color .15s, transform .15s;
+  user-select: none;
+}
+.star-rating .star.active {
+  color: #f59e0b;
+}
+.star-rating .star:active {
+  transform: scale(1.2);
+}
+.my-rating-hint {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-left: 4px;
+}
+
+/* --- 打卡按钮 --- */
+.checkin-btn {
+  gap: 4px;
+}
+.checkin-btn.checked-in {
+  color: var(--primary);
+}
+.checkin-text {
+  font-size: 12px;
+}
+.checkin-count {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-left: auto;
+}
+
+/* --- 动态评分 info 行 --- */
+.detail-meta .detail-rating {
+  color: var(--warning);
+  font-weight: 500;
+}
+
+/* --- 目的地 tab（横滑） --- */
+.dest-tabs-wrap {
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface);
+  padding: 0;
+}
+/* 【城市标签优化】右缘渐隐提示——城市较多（10+）横滑时暗示"右侧还有更多城市"，
+ * 内容未溢出时渐隐区为空白不可见，无副作用；pointer-events:none 保证不阻挡点击 */
+.dest-tabs-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 28px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff);
+  pointer-events: none;
+}
+.dest-tabs-wrap::-webkit-scrollbar {
+  display: none;
+}
+/* 【城市标签折叠的实现】折叠组：默认隐藏，"更多"chip 切换；展开后作为普通 flex 项参与排布
+ * （组内 chip 间距沿用 .dest-tab 自身 margin-right，不再加 gap 避免叠加） */
+.dest-tab-extra {
+  display: none;
+  align-items: center;
+  flex-shrink: 0; /* 防御：容器被压缩时内部 chip 不会被裁切 */
+}
+/* 防御：钉死 chip 尺寸要素（宽随内容、不换行、padding 不可覆盖），
+ * 避免任何缓存/环境差异导致选中 chip 塌缩成圆形裁字 */
+.dest-tab-extra .dest-tab,
+.dest-tabs .dest-tab {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 6px 14px;
+  min-width: max-content;
+}
+.dest-tabs.expanded .dest-tab-extra {
+  display: flex;
+}
+/* "更多/收起"chip：与城市 chip 同款样式 + 折叠指示符 */
+.dest-tab-more {
+  color: var(--text-secondary);
+}
+.dest-more-caret {
+  font-size: 9px;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+.dest-tabs {
+  display: flex;
+  gap: 0;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+.dest-tab {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-radius: 16px;
+  background: var(--bg);
+  margin-right: 8px;
+  transition: all .2s;
+  cursor: pointer;
+}
+.dest-tab.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* --- 关联景点搜索下拉（note-edit） --- */
+.attraction-search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  max-height: 200px;
+  overflow-y: auto;
+}
+#linked-attraction-area {
+  position: relative;
+}
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  transition: background .15s;
+}
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+.dropdown-item:active {
+  background: var(--bg);
+}
+.dropdown-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-xs);
+  object-fit: cover;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.dropdown-item span {
+  font-size: 14px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dropdown-no-img {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-xs);
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
+.dropdown-empty {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-hint);
+}
+
+/* --- 已选关联景点卡片（note-edit） --- */
+.linked-attraction-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--primary-light);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary);
+}
+.linked-attraction-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-xs);
+  object-fit: cover;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.linked-attraction-info {
+  flex: 1;
+  min-width: 0;
+}
+.linked-attraction-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.linked-attraction-hint {
+  font-size: 11px;
+  color: var(--primary);
+  margin-top: 2px;
+}
+.linked-attraction-remove {
+  font-size: 18px;
+  color: var(--text-hint);
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+/* --- 关联景点横幅（note-detail） --- */
+.linked-attraction-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--primary-light);
+  margin: 0;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  transition: background .15s;
+}
+.linked-attraction-banner:active {
+  background: #d4f0ec;
+}
+.linked-attraction-banner-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-xs);
+  object-fit: cover;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.linked-attraction-banner-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.linked-attraction-banner-label {
+  font-size: 11px;
+  color: var(--primary);
+}
+.linked-attraction-banner-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- 足迹 map --- */
+.footprint-map-container {
+  border-radius: 0;
+  overflow: hidden;
+  z-index: 0;
+  background: #e8ecee;
+}
+
+/* --- 足迹列表 --- */
+.footprint-list {
+  padding: 0 0 2px;
+}
+.footprint-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background .15s;
+}
+.footprint-item:active {
+  background: var(--bg);
+}
+.footprint-item-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.footprint-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.footprint-item-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 打卡时间行：前置主绿小圆点（打卡戳记），弱化灰色箭头 */
+.footprint-item-time {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 4px;
+}
+.footprint-item-time::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
+/* === 【热门目的地的实现】城市卡片 — 横向滚动彩色卡片 === */
+/* 横向滚动容器：隐藏滚动条 */
+.dest-cards-scroll {
+  display: flex;
+  gap: 10px;
+  padding: 0 16px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.dest-cards-scroll::-webkit-scrollbar {
+  display: none;
+}
+/* 城市卡片：渐变背景 + 圆角 + 白色文字 + 点击微缩动效 */
+.dest-card {
+  flex-shrink: 0;
+  width: 120px;
+  height: 80px;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s;
+  box-shadow: var(--shadow-md);
+  color: #fff;
+}
+.dest-card:active {
+  transform: scale(0.96);
+}
+/* 城市名：粗体白色 */
+.dest-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+/* 右箭头：底部右对齐 */
+.dest-card-arrow {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+}
+.dest-card {
+  position: relative;
+}
+
+/* === 【结伴同行的实现】发布按钮 + 表单 + 列表 + 卡片 + 删除 === */
+/* 发布按钮行 */
+.buddy-post-btn-wrap {
+  padding: 0 16px 8px;
+}
+/* 发布表单包裹 */
+.buddy-form-wrap {
+  padding: 0 16px 12px;
+}
+/* 表单区：白底圆角卡片 + 内边距 */
+.buddy-form {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* 表单操作按钮行：右对齐 */
+.buddy-form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+/* 结伴列表 */
+.buddy-list {
+  padding: 0 16px;
+}
+/* 结伴卡片：白底圆角 + 阴影 + 间距 */
+.buddy-card {
+  display: flex;
+  align-items: flex-start;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.buddy-card-body {
+  flex: 1;
+  min-width: 0;
+}
+/* 目的地：粗体主色 */
+.buddy-card-dest {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+/* 日期：小号灰色 */
+.buddy-card-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+/* 备注描述：正文颜色 */
+.buddy-card-desc {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  margin-top: 4px;
+  word-break: break-word;
+}
+/* 发布者信息行：头像 + 昵称 */
+.buddy-card-poster {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+/* 删除按钮：红色 ×，绝对定位在卡片右上角 */
+.buddy-delete-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--danger);
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-left: 8px;
+}
+.buddy-delete-btn:active {
+  background: rgba(248, 113, 113, 0.25);
+}
+
+/* === 【个人中心的实现】侧边栏退出登录项——红字样式 === */
+/* 退出登录收纳进侧边栏：红色文字 + 危险操作视觉提示 */
+.side-drawer-logout {
+  color: var(--danger) !important;
+  font-weight: 500;
+}
+
+/* === 【我的资产入口的实现】profile 页"我的资产"三按钮栏 === */
+/* 三按钮容器：flex 横向排列，白底圆角卡片 + 阴影，与签到卡片风格一致 */
+.profile-assets {
+  display: flex;
+  gap: 0;
+  margin: 8px 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+/* 单个入口项：等宽 + 图标与文字横排，降低整栏高度 */
+.profile-assets-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-right: 1px solid var(--border-light);
+}
+.profile-assets-item:last-child {
+  border-right: none;
+}
+.profile-assets-item:active {
+  background: var(--bg);
+}
+/* 图标圆角底：主题色渐变芯片（135° 对角渐变 + 细描边），图标 18px 圆角线型 */
+.profile-assets-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(14, 159, 138, 0.16), rgba(56, 201, 179, 0.09));
+  border: 1px solid rgba(14, 159, 138, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.profile-assets-icon svg {
+  width: 18px;
+  height: 18px;
+  color: var(--primary);
+}
+/* 入口标签文字 */
+.profile-assets-label {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* === 【钱包资产的实现】钱包页三资产卡片 === */
+/* 钱包页内容区 */
+.wallet-content {
+  padding: 16px;
+}
+/* 三资产卡片容器：flex 横向等宽排列 */
+.wallet-cards {
+  display: flex;
+  gap: 10px;
+}
+/* 单张资产卡片：白底圆角 + 阴影 + 等分 */
+.wallet-card {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px 12px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+/* 资产卡片图标圆形底 */
+.wallet-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+/* 余额卡片图标：金色底 */
+.wallet-card-icon.balance {
+  background: #fef3c7;
+}
+/* 积分卡片图标：绿色底 */
+.wallet-card-icon.points {
+  background: var(--primary-light);
+}
+/* 优惠券卡片图标：蓝色底 */
+.wallet-card-icon.coupon {
+  background: #dbeafe;
+}
+/* 资产数值：大号粗体 */
+.wallet-card-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+/* 资产标签：小号灰色 */
+.wallet-card-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+/* 积分说明轻提示 */
+.wallet-tip {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--primary-light);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--primary-dark);
+  line-height: 1.6;
+  text-align: center;
+}
+/* 【钱包卡点击跳转的实现】可点击卡片 + 右上角箭头 */
+.wallet-card-clickable {
+  cursor: pointer;
+  position: relative;
+  transition: transform .15s, box-shadow .15s;
+}
+.wallet-card-clickable:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-md);
+}
+.wallet-card-arrow {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === 【订单管理的实现】订单列表卡片 === */
+/* 订单内容区 */
+.orders-content {
+  padding: 0;
+}
+/* 单个订单卡片：白底圆角 + 阴影 + 间距 + 可点击 */
+.order-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin: 0 16px 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: transform .15s;
+}
+.order-card:active {
+  transform: scale(0.98);
+}
+/* 订单头部行：票名 + 状态徽标 */
+.order-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+/* 票名：粗体 */
+.order-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 订单状态徽标 */
+.order-status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+/* 已完成/已支付：绿色背景 */
+.order-status.done {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+/* 待支付/处理中：橙色背景 */
+.order-status.pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+/* 已取消/退款：灰色背景 */
+.order-status.cancel {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+/* 订单信息行：金额 + 支付方式 + 时间 */
+.order-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+/* 金额高亮 */
+.order-price {
+  font-weight: 600;
+  color: var(--danger);
+}
+/* 金额主行：大字金额 + 支付方式（订单卡视觉主层级） */
+.order-amount-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.order-card .order-price {
+  font-size: 17px;
+  line-height: 1.2;
+}
+.order-paytype {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+/* 时间标签 */
+.order-time {
+  font-size: 12px;
+  color: var(--text-hint);
+}
+/* 未支付订单付款提示：浅色小字 */
+.order-pay-tip {
+  font-size: 12px;
+  color: #b45309;
+  margin-top: 6px;
+}
+/* 订单号：完整订单号小字号显示，过长可换行（同秒杀券 .coupon-card-id 标准） */
+.order-card-id {
+  font-size: 11px;
+  color: var(--text-hint);
+  font-family: monospace;
+  word-break: break-all;
+}
+
+/* === 【订单详情的实现】订单详情页样式 === */
+/* 订单详情——状态横幅（三色：pending 橙/done 绿/cancel 灰） */
+.order-detail-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+}
+.order-detail-banner.pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+.order-detail-banner.done {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.order-detail-banner.cancel {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+/* 订单详情——信息卡片（白底圆角 + 阴影 + 行列布局） */
+.order-detail-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin: 0 16px 12px;
+  padding: 4px 16px;
+}
+.order-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.order-detail-row:last-child {
+  border-bottom: none;
+}
+.order-detail-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.order-detail-value {
+  font-size: 14px;
+  color: var(--text);
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+/* 订单详情——金额高亮（大号红色） */
+.order-detail-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--danger);
+}
+/* 订单详情——支付区（白底卡片 + 余额 + 支付按钮 + 提示） */
+.order-pay-section {
+  margin: 0 16px 16px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.order-pay-balance {
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 14px;
+  text-align: center;
+  font-weight: 500;
+}
+.order-pay-section .order-pay-tip {
+  font-size: 12px;
+  color: #b45309;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* === 【积分记录的实现】积分流水列表 === */
+/* 积分内容区 */
+.points-content {
+  padding: 0;
+}
+/* 单条积分记录：flex 横向排列 */
+.points-record {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+}
+/* 记录描述：左侧主文字 */
+.points-desc {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.4;
+}
+/* 记录时间：描述下方的次要文字 */
+.points-desc .points-time {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 2px;
+}
+/* 类型标签：小药丸 */
+.points-type-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+/* 变动数值 */
+.points-change {
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+/* 正数：绿色 + 加号 */
+.points-change.positive {
+  color: var(--success);
+}
+/* 负数/零：灰色（实际扣减使用红色） */
+.points-change.negative {
+  color: var(--danger);
+}
+
+/* === 【余额明细的实现】余额页样式 === */
+/* 余额内容区 */
+.balance-content {
+  padding: 0;
+}
+/* 顶部余额卡：白底主题色渐变 */
+.balance-top-card {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  margin: 16px;
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  color: #fff;
+  text-align: center;
+}
+.balance-top-label {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-bottom: 6px;
+}
+.balance-top-value {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+/* 充值入口卡 */
+.balance-recharge-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  margin: 0 16px 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.balance-recharge-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.balance-recharge-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+.balance-recharge-desc {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 2px;
+}
+/* 消费记录——section title */
+.balance-records-section {
+  padding: 0;
+}
+/* 单条消费记录 */
+.balance-record {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+}
+.balance-record-desc {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.4;
+}
+.balance-record-time {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 2px;
+}
+/* 类型标签 */
+.balance-type-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+/* 变动金额 */
+.balance-change {
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.balance-change.positive {
+  color: var(--success);
+}
+.balance-change.negative {
+  color: var(--danger);
+}
+/* 充值弹层 */
+.recharge-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0,0,0,0);
+  transition: background 0.25s;
+}
+.recharge-mask.show {
+  background: rgba(0,0,0,0.45);
+}
+.recharge-panel {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface);
+  border-radius: var(--radius) var(--radius) 0 0;
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.recharge-mask.show .recharge-panel {
+  transform: translateY(0);
+}
+.recharge-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+.recharge-panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.recharge-panel-close {
+  font-size: 22px;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  line-height: 1;
+}
+.recharge-panel-body {
+  padding: 16px;
+}
+.recharge-input-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+.recharge-currency {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  margin-right: 8px;
+}
+.recharge-amount-input {
+  flex: 1;
+  font-size: 24px;
+  font-weight: 600;
+  border: none !important;
+  padding: 4px 0 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  color: var(--text);
+}
+.recharge-amount-input::placeholder {
+  color: var(--text-hint);
+  font-weight: 400;
+  font-size: 16px;
+}
+.recharge-quick-amounts {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.recharge-quick-btn {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background .15s;
+}
+.recharge-quick-btn:active {
+  background: #d4f0ec;
+}
+.recharge-pay-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.recharge-pay-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.recharge-pay-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .2s;
+}
+.recharge-pay-tab.active {
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+.recharge-panel-footer {
+  padding: 12px 16px 20px;
+}
+
+/* === 【秒杀券详情的实现】券列表样式 === */
+.coupons-content {
+  padding: 0;
+}
+/* 券卡片：车票造型——左主券 + 撕票虚线 + 右副券 */
+.coupon-ticket {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  margin: 0 16px 10px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .15s;
+}
+.coupon-ticket:active {
+  transform: scale(0.98);
+}
+/* 左侧主题色票根条（已核销置灰） */
+.coupon-ticket::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--primary);
+}
+.coupon-ticket.used::before {
+  background: #c9d4d0;
+}
+/* 主券区 */
+.coupon-ticket-main {
+  flex: 1;
+  min-width: 0;
+  padding: 13px 12px 13px 18px;
+}
+.coupon-ticket-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 券号：NO.+完整订单号，等宽字体仿票面印刷 */
+.coupon-ticket-no {
+  font-size: 11px;
+  color: var(--text-hint);
+  margin-top: 3px;
+  font-family: monospace;
+  letter-spacing: 0.3px;
+  word-break: break-all;
+}
+.coupon-ticket-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+/* 副券：竖虚线撕票线 + 中央打孔 */
+.coupon-ticket-stub {
+  position: relative;
+  flex-shrink: 0;
+  width: 96px;
+  padding: 12px 12px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+}
+.coupon-ticket-stub::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed var(--border);
+}
+.coupon-ticket-stub::after {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+  transform: translateY(-50%);
+  box-shadow: inset 0 0 0 1px var(--border-light);
+}
+.coupon-ticket-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--danger);
+  line-height: 1.2;
+}
+.coupon-ticket-status {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.coupon-ticket.used .coupon-ticket-status {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.coupon-ticket-cta {
+  font-size: 11px;
+  color: var(--text-hint);
+}
+
+/* === 【秒杀券详情的实现】条形码弹层样式 === */
+.barcode-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0);
+  transition: background .2s;
+}
+.barcode-mask.show {
+  background: rgba(0,0,0,0.55);
+}
+.barcode-card {
+  width: 320px;
+  max-width: 90vw;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity .2s, transform .2s;
+}
+.barcode-mask.show .barcode-card {
+  opacity: 1;
+  transform: scale(1);
+}
+.barcode-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.barcode-card-close {
+  font-size: 22px;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  line-height: 1;
+}
+.barcode-card-body {
+  padding: 20px 16px 16px;
+  text-align: center;
+}
+.barcode-canvas-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+.barcode-canvas-wrap canvas {
+  max-width: 100%;
+}
+/* CSS 条纹降级 */
+.barcode-fallback {
+  text-align: center;
+}
+.barcode-stripes {
+  display: inline-flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+.barcode-fallback-num {
+  font-size: 14px;
+  font-family: monospace;
+  color: var(--text);
+  margin-top: 8px;
+  letter-spacing: 2px;
+}
+/* 【秒杀券详情的实现】弹层订单详情信息区：标签灰 + 值黑，左对齐信息行 */
+.barcode-info {
+  margin-top: 16px;
+  text-align: left;
+}
+.barcode-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-light);
+}
+.barcode-info-row:last-of-type {
+  border-bottom: none;
+}
+.barcode-info-label {
+  flex-shrink: 0;
+  color: var(--text-hint);
+}
+.barcode-info-value {
+  color: var(--text);
+  text-align: right;
+  word-break: break-all;
+}
+.barcode-info-tip {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* === 【积分记录的实现】积分余额卡 === */
+.points-balance-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  margin: 12px 16px;
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.points-balance-left {
+  flex: 1;
+}
+.points-balance-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.points-balance-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+/* === 【积分抵扣的实现】订单支付区积分抵扣样式 === */
+.order-points-deduct {
+  margin-bottom: 14px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+}
+.order-points-deduct-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.order-points-deduct-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.order-points-input {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 8px 10px;
+  background: var(--surface);
+}
+.order-points-available {
+  font-size: 12px;
+  color: var(--primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.order-points-quick {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.order-points-quick-btn {
+  flex: 1;
+  padding: 6px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: background .15s;
+}
+.order-points-quick-btn:active {
+  background: #d4f0ec;
+}
+.order-points-result {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+.order-points-final {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+/* === 【全局搜索的实现】搜索页样式 === */
+
+/* 搜索页头部：搜索框 + 取消按钮 一行排列 */
+.search-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+/* 搜索框包裹：flex-1 + 圆角背景 + 图标/输入/清除 */
+.search-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: var(--bg);
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: border-color .2s;
+}
+.search-input-wrap:focus-within {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+/* 搜索输入框：无边框/无背景，全宽 */
+.search-input {
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  padding: 8px 0 !important;
+  font-size: 15px;
+  color: var(--text);
+  border-radius: 0 !important;
+}
+.search-input::placeholder {
+  color: var(--text-hint);
+}
+/* 清除按钮：小圆形，输入有内容时显示 */
+.search-clear-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.08);
+  transition: background .15s;
+}
+.search-clear-btn:active {
+  background: rgba(0,0,0,0.15);
+}
+/* 取消按钮 */
+.search-cancel-btn {
+  flex-shrink: 0;
+  font-size: 15px;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: color .15s;
+}
+.search-cancel-btn:active {
+  color: var(--primary);
+}
+
+/* 热门搜索区 */
+.search-hot-wrap {
+  padding: 16px;
+}
+/* 热门标题 */
+.search-hot-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+/* 空态 */
+.search-hot-empty {
+  font-size: 13px;
+  color: var(--text-hint);
+  text-align: center;
+  padding: 20px 0;
+}
+/* 热门词条 chips：横向 flex-wrap 排列 */
+.search-hot-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+/* 单个 chip：圆角药丸 + 主题色浅背景 */
+.search-hot-chip {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  user-select: none;
+}
+.search-hot-chip:active {
+  background: #d4f0ec;
+  transform: scale(0.96);
+}
+
+/* 联想列表 */
+.search-suggest-list {
+  padding: 0;
+}
+/* 联想项：图标 + 文字，点击触发搜索 */
+.search-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  transition: background .15s;
+}
+.search-suggest-item:active {
+  background: var(--bg);
+}
+
+/* 搜索结果 tab 栏 */
+.search-result-tabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+/* 单个 tab：等宽 + 居中 + 底部指示条 */
+.search-result-tab {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color .2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.search-result-tab.active {
+  color: var(--primary);
+}
+.search-result-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+}
+/* tab 内计数标签 */
+.search-tab-count {
+  font-size: 11px;
+  color: var(--text-hint);
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-weight: 400;
+}
+
+/* 搜索结果列表（景点卡片复用 .attraction-card）
+ * 左右 16px 留白对齐首页 .page-content 与游记瀑布流——修复景点卡片左右贴边占满 */
+.search-result-list {
+  padding: 8px 16px 16px;
+}
+
+/* 用户搜索结果 */
+.search-user-list {
+  padding: 0;
+}
+/* 用户行：头像 + 昵称/签名 + 箭头 */
+.search-user-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background .15s;
+}
+.search-user-item:active {
+  background: var(--bg);
+}
+.search-user-info {
+  flex: 1;
+  min-width: 0;
+}
+.search-user-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+.search-user-sign {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* === 【AI搜索总结的实现】搜索结果顶部 AI 总结卡片 === */
+/* 外层：与热门词条区一致的左右留白，卡片独立于全宽 tab 栏 */
+.search-ai-wrap {
+  padding: 12px 16px 4px;
+}
+/* 卡片：浅青渐变 + 顶部渐变细线（呼应票根视觉），圆角与全局卡片一致 */
+.search-ai-card {
+  position: relative;
+  padding: 13px 14px 10px;
+  background: linear-gradient(180deg, #f0fbf9 0%, var(--surface) 58%);
+  border: 1px solid #d9f0eb;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  animation: pageIn 0.22s ease-out;
+}
+.search-ai-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0E9F8A 0%, #38c9b3 55%, #ffe0a3 100%);
+}
+
+/* === 【AI搜索总结的实现】小红书式默认折叠：正文 3 行截断，来源/追问/反馈随折叠隐藏 === */
+.search-ai-card.collapsed .search-ai-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.search-ai-card.collapsed .search-ai-expand,
+.search-ai-card.collapsed .search-ai-sources,
+.search-ai-card.collapsed .search-ai-suggest,
+.search-ai-card.collapsed .search-ai-feedback,
+.search-ai-card.collapsed .search-ai-foot {
+  display: none !important;
+}
+/* 右上角「展开/收起」切换：胶囊按钮 + 旋转箭头 */
+.search-ai-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  border: 1px solid rgba(14, 159, 138, 0.35);
+  background: var(--surface);
+  color: var(--primary);
+  font-size: 11px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.search-ai-toggle svg {
+  transition: transform 0.15s;
+}
+.search-ai-card:not(.collapsed) .search-ai-toggle svg {
+  transform: rotate(180deg);
+}
+.search-ai-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+/* AI 徽标：主题色渐变方块 */
+.search-ai-badge {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #0E9F8A, #25c2aa);
+  box-shadow: 0 2px 6px rgba(14, 159, 138, 0.28);
+}
+.search-ai-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+/* 状态标签：生成中… / AI 生成 */
+.search-ai-tag {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 10px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+/* 总结正文：Markdown 渲染（段落/列表/加粗），行高与聊天正文一致 */
+.search-ai-text {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #333;
+}
+.search-ai-text p {
+  margin: 0 0 6px;
+}
+.search-ai-text p:last-child {
+  margin-bottom: 0;
+}
+.search-ai-text ul,
+.search-ai-text ol {
+  margin: 2px 0 7px;
+  padding-left: 20px;
+}
+.search-ai-text li {
+  margin-bottom: 3px;
+}
+.search-ai-text li:last-child {
+  margin-bottom: 0;
+}
+.search-ai-text b {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+.search-ai-text .ai-md-h {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+/* 免责声明：弱化提示 + 右侧「问旅游助手」直通入口（搜索总结与个人 agent 联通） */
+.search-ai-foot {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10.5px;
+  color: var(--text-hint);
+}
+.search-ai-foot-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.search-ai-ask {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(14, 159, 138, 0.08);
+  transition: background .15s;
+}
+.search-ai-ask:active {
+  background: rgba(14, 159, 138, 0.18);
+}
+/* 换一换：标题行右侧刷新按钮（跳过缓存重新生成） */
+.search-ai-refresh {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+  border-radius: 50%;
+  background: rgba(14, 159, 138, 0.08);
+  transition: background .15s, transform .2s;
+}
+.search-ai-refresh:active {
+  background: rgba(14, 159, 138, 0.18);
+  transform: rotate(60deg);
+}
+/* hidden 属性优先：卡片内分区用 display:flex/block 时会覆盖浏览器默认的 [hidden]{display:none} */
+.search-ai-card [hidden] {
+  display: none !important;
+}
+/* 引用角标 [n]：点击定位到对应参考来源 */
+.search-ai-cite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  margin: 0 1px;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 4px;
+  vertical-align: super;
+  cursor: pointer;
+}
+.search-ai-cite:active {
+  background: #d4f0ec;
+}
+/* 长文折叠：超过 6 行时底部渐隐，点击「展开全文」 */
+.search-ai-text.collapsed {
+  max-height: 168px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+}
+.search-ai-expand {
+  display: block;
+  margin: 4px auto 0;
+  padding: 2px 10px;
+  font-size: 11px;
+  color: var(--primary);
+  background: transparent;
+}
+.search-ai-expand:active {
+  opacity: .7;
+}
+/* 参考来源：横向滚动条目，点击直达景点/游记详情 */
+.search-ai-sources {
+  margin-top: 10px;
+}
+.search-ai-sources-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.search-ai-source-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.search-ai-source-list::-webkit-scrollbar {
+  display: none;
+}
+.search-ai-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  max-width: 190px;
+  padding: 6px 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  text-align: left;
+  transition: border-color .15s, background .15s;
+}
+.search-ai-source:active {
+  background: var(--bg);
+}
+.search-ai-source.flash {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  animation: aiSourceFlash .6s ease 2;
+}
+@keyframes aiSourceFlash {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14, 159, 138, 0); }
+  50% { box-shadow: 0 0 0 3px rgba(14, 159, 138, 0.18); }
+}
+.search-ai-source-no {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  border-radius: 4px;
+  background: var(--primary);
+}
+.search-ai-source-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.search-ai-source-title {
+  max-width: 150px;
+  font-size: 11.5px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-ai-source-sub {
+  max-width: 150px;
+  font-size: 10px;
+  color: var(--text-hint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 继续问：点击进入旅游助手并预填问题 */
+.search-ai-suggest {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed #dcefeb;
+}
+.search-ai-suggest-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 7px;
+}
+.search-ai-suggest-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.search-ai-suggest-chip {
+  padding: 5px 10px;
+  font-size: 11.5px;
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  border-radius: 14px;
+  transition: background .15s, transform .1s;
+}
+.search-ai-suggest-chip:active {
+  background: #d4f0ec;
+  transform: scale(.97);
+}
+/* 反馈：有帮助/没帮助 + 点踩原因 chips */
+.search-ai-feedback {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed #dcefeb;
+}
+.search-ai-feedback-label {
+  font-size: 10.5px;
+  color: var(--text-hint);
+}
+.search-ai-thumb {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  border-radius: 50%;
+  background: var(--bg);
+  transition: color .15s, background .15s;
+}
+.search-ai-thumb:active {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+/* 已选中反馈：高亮，再点一次取消 */
+.search-ai-thumb.active {
+  color: var(--primary);
+  background: var(--primary-light);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+.search-ai-feedback-thanks {
+  font-size: 10.5px;
+  color: var(--primary);
+}
+.search-ai-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  margin-top: 2px;
+}
+.search-ai-reason {
+  padding: 3px 8px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border-radius: 10px;
+}
+.search-ai-reason:active {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+/* 骨架屏：首个 token 到达前的流动占位 */
+.search-ai-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 2px 0 5px;
+}
+.search-ai-skeleton span {
+  display: block;
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eef7f5 25%, #e0f2ed 37%, #eef7f5 63%);
+  background-size: 400% 100%;
+  animation: aiShimmer 1.2s ease infinite;
+}
+.search-ai-skeleton span:nth-child(1) { width: 92%; }
+.search-ai-skeleton span:nth-child(2) { width: 100%; }
+.search-ai-skeleton span:nth-child(3) { width: 68%; }
+@keyframes aiShimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+/* === 【游记列表的实现】悬浮按钮已移除：随机刷新=点击顶部标题，回顶=点 tabbar「首页」 === */
+
+/* ===================================================================
+   【响应式适配的实现】@media 断点
+   =================================================================== */
+
+/* --- 极小屏 (≤360px)：缩减间距、字号，保证 320px 无横向滚动 --- */
+@media (max-width: 360px) {
+  .page-content { padding: 10px 12px; }
+  .page-header { padding: 10px 12px; }
+  .page-header h2 { font-size: 15px; }
+  .section-title { font-size: 15px; padding: 12px 12px 6px; }
+  .search-bar { padding: 8px 12px; gap: 8px; }
+  .channel-tabs { margin: 8px 12px; }
+  .tabs-scroll { padding: 6px 0; gap: 2px; margin: 0 12px; }
+  .tab-item { font-size: 11px; padding: 6px 2px; }
+  .notes-waterfall { columns: 2; column-gap: 8px; padding: 10px 12px 14px; }
+  .feed-list { padding: 0 12px; }
+  .attraction-card .card-img { width: 100px; min-height: 90px; }
+  .attraction-card .card-info { padding: 10px; gap: 4px; }
+  .attraction-card .card-name { font-size: 14px; }
+  .profile-header { padding: 20px 12px; gap: 10px; }
+  .sign-card { margin: 8px 12px; padding: 10px 12px; }
+  .login-page { padding: 32px 16px; }
+  .login-form { max-width: 100%; }
+  .login-tabs { max-width: 100%; }
+  .login-logo { font-size: 24px; }
+  .register-page { padding: 20px 16px; }
+  .register-form { max-width: 100%; }
+  .edit-form { padding: 12px; }
+  .detail-header { padding: 12px; }
+  .detail-title { font-size: 16px; }
+  .detail-content { padding: 12px; font-size: 14px; }
+  .detail-actions { padding: 10px 12px; gap: 14px; }
+  .detail-section { padding: 12px; }
+  .modal-card { width: auto; }
+  .avatar-preview-card { width: auto; padding: 24px 16px 16px; }
+  .avatar-preview-img { width: 150px; height: 150px; }
+  .follows-list { padding: 0 12px; }
+  .browse-item { padding: 12px; }
+  .msg-categories { padding: 12px 12px 6px; gap: 8px; }
+  .msg-cat-circle { width: 56px; height: 56px; }
+  /* 【分类未读角标的实现】极小屏适配：分类圈 56px 时角标微缩，避免压住圆形图标主体 */
+  .msg-cat-badge { min-width: 14px; height: 14px; font-size: 9px; border-radius: 7px; padding: 0 2px; }
+  .msg-cat-badge-lg { min-width: 18px; border-radius: 9px; padding: 0 3px; }
+  .ticket-card { padding: 12px; }
+  .ticket-card .ticket-pay { font-size: 18px; }
+  .trip-detail-header { padding: 12px; }
+  .trip-detail-day { padding: 12px; }
+  .buddy-card { padding: 12px; }
+  .dest-cards-scroll { padding: 0 12px 10px; gap: 8px; }
+  .dest-card { width: 100px; height: 70px; }
+  .dest-card-name { font-size: 14px; }
+  .nearby-scroll { padding: 0 12px; gap: 8px; }
+  .nearby-card { width: 112px; height: 92px; }
+  .search-header { padding: 8px 12px; }
+  .search-hot-wrap { padding: 12px; }
+  .fav-tabs { margin: 0 12px 10px; }
+  .fav-item { padding: 10px 12px; }
+  .profile-menu { margin: 0 12px; }
+  .chat-messages { padding: 10px 12px; }
+  .chat-session-item { padding: 12px; }
+  .comment-item { padding: 10px 0; }
+  .comment-box { padding: 10px 12px; }
+  .user-tabs { margin: 10px 12px 0; }
+  /* 极小屏下确保轮播容器不溢出 */
+  .img-carousel { overflow: hidden; }
+  .img-carousel .carousel-track { width: 100%; }
+}
+
+/* --- 桌面宽屏 (≥768px)：手机容器居中，背景加深，添加边框/圆角/阴影 --- */
+@media (min-width: 768px) {
+  html { background: #e8eaed; }
+  body {
+    background: #d5d7db;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.18) transparent;
+  }
+  body::-webkit-scrollbar { width: 6px; }
+  body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 3px; }
+  .app-container {
+    margin: 20px auto 24px;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06);
+    overflow: hidden;
+    min-height: calc(100dvh - 44px);
+  }
+  .global-search-bar {
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .tabbar {
+    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.06);
+  }
+  /* 桌面弹窗滚动条 */
+  .side-drawer::-webkit-scrollbar { width: 4px; }
+  .side-drawer::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+  /* 桌面下抽屉从居中手机容器(480px)左缘展开，而非浏览器最左侧；
+     高度/圆角同步对齐容器（上边距 20px + 下边距 24px），避免抽屉竖向超出手机容器 */
+  .side-drawer {
+    left: calc(50% - 240px);
+    top: 20px;
+    bottom: 24px;
+    border-radius: var(--radius) 0 0 var(--radius);
+    transition: transform 0.25s ease, left 0.25s ease;
+  }
+  /* 关闭态归位到屏幕左缘之外（left:0 + translateX(-100%) 完全隐藏），保证滑出动画平滑 */
+  .side-drawer:not(.show) {
+    left: 0;
+  }
+  /* 【UI 统一性的实现】桌面宽屏下所有弹层蒙层统一限制在手机容器范围内（与容器同宽同位同圆角）：
+     应用在桌面以居中 480px 手机容器形态展示，蒙层不应铺满整个浏览器窗口
+     （fixed inset:0 会把容器右侧的窗口区域全部压暗，导致各弹层暗区宽度不一致） */
+  .side-mask,
+  .city-sheet-mask,
+  .recharge-mask,
+  .modal-mask,
+  .avatar-preview-mask,
+  .barcode-mask {
+    left: calc(50% - 240px);
+    width: 480px;
+    top: 20px;
+    bottom: 24px;
+    border-radius: var(--radius);
+  }
+}
+
+/* --- 溢出修复：确保 320px 等小屏下无横向滚动 —— 全局兜底 --- */
+.app-container { overflow-x: hidden; }
+.img-carousel { overflow: hidden; max-width: 100%; }
+.img-carousel .carousel-track { max-width: 100%; }
+/* 所有固定宽度元素在小屏下不超界 */
+.login-form, .register-form, .login-tabs { max-width: 100%; }
+.modal-card, .avatar-preview-card { max-width: 90vw; }
+.notes-waterfall { overflow-x: hidden; }
+.btn-sm { min-height: 32px; }
+/* 触屏目标尺寸：关键点击区高度 ≥ 40px */
+.tabbar-item { min-height: 44px; }
+.channel-tab { min-height: 40px; }
+.tab-item { min-height: 36px; }
+.login-tab, .fav-tab, .user-tab { min-height: 36px; }
+
+/* === 【地图POI热点的实现】底图 POI 点击详情气泡（旅行/行程详情/足迹地图共用） === */
+.poi-info-card {
+  padding: 10px 12px;
+  max-width: 240px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.poi-info-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.poi-info-row {
+  margin-top: 2px;
+  word-break: break-all;
+}
+.poi-info-label {
+  color: var(--text-hint);
+  margin-right: 6px;
+}
+.poi-info-loading {
+  padding: 2px 0;
+  color: var(--text-hint);
+}
+/* 平台联动区块：POI 命中本平台景点时追加（分隔线 + 收录标识 + 查看详情按钮） */
+.poi-platform {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.poi-platform-tag {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-bottom: 6px;
+}
+.poi-platform-btn {
+  display: block;
+  margin-top: 8px;
+  text-align: center;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  padding: 6px 0;
+  text-decoration: none;
+}
+.poi-platform-btn:active { opacity: 0.85; }
+.poi-info-link {
+  display: block;
+  margin-top: 8px;
+  text-align: center;
+  color: var(--primary);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+/* === 【客服工作台权限的实现】非管理员访问 #/support-admin 的"专属功能"锁定页 === */
+.admin-locked {
+  padding-top: 30vh;
+  text-align: center;
+}
+.admin-locked p {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+}
+.admin-locked .admin-locked-sub {
+  font-size: 12px;
+  color: var(--text-hint);
+  font-weight: 400;
+}
+.admin-locked .btn {
+  margin-top: 20px;
+}
+
+/* === 【企业级客服Agent的实现】客服页：转人工横幅、反馈按钮、工作台 === */
+.support-header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.support-header-btn { border: none; background: none; color: var(--primary); font-size: 13px; padding: 4px 6px; cursor: pointer; }
+.support-banner { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 16px 0; padding: 8px 12px; background: #fff7e6; color: #ad6800; border-radius: 8px; font-size: 12px; line-height: 1.5; }
+.support-banner button { border: none; background: var(--primary); color: #fff; border-radius: 12px; padding: 4px 10px; font-size: 12px; flex-shrink: 0; cursor: pointer; }
+.chat-bubble-hint { color: var(--text-hint); font-size: 12px; background: transparent; box-shadow: none; padding: 2px 4px; }
+.chat-feedback { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.chat-feedback button { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 4px 9px; color: var(--text-secondary); cursor: pointer; }
+.chat-feedback button:disabled { opacity: .5; cursor: default; }
+/* 已选中反馈：高亮，再点一次取消 */
+.chat-feedback button.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.chat-feedback-done { font-size: 11px; color: var(--text-hint); }
+.admin-page { display: flex; flex-direction: column; height: 100%; }
+.admin-refresh { border: none; background: none; color: var(--primary); font-size: 13px; padding: 4px 6px; cursor: pointer; }
+.admin-tabs { display: flex; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+.admin-tabs button { border: none; background: var(--bg); color: var(--text-secondary); padding: 6px 14px; border-radius: 16px; font-size: 13px; cursor: pointer; }
+.admin-tabs button.active { background: var(--primary); color: #fff; }
+.admin-list { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.admin-card { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow-sm); padding: 12px; font-size: 13px; }
+.admin-card-top { display: flex; justify-content: space-between; align-items: center; }
+.admin-user { font-weight: 600; color: var(--text); }
+.admin-status { font-size: 11px; color: var(--primary); background: rgba(14,159,138,.1); padding: 2px 8px; border-radius: 10px; }
+.admin-reason { margin-top: 6px; color: var(--text); line-height: 1.5; }
+.admin-meta { margin-top: 4px; font-size: 11px; color: var(--text-hint); }
+.admin-actions { display: flex; gap: 8px; margin-top: 10px; }
+.admin-actions button { border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 14px; padding: 4px 12px; font-size: 12px; cursor: pointer; }
+.admin-actions button.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.admin-empty { padding: 40px 16px; text-align: center; color: var(--text-hint); font-size: 13px; }
+.admin-detail { height: 55%; display: flex; flex-direction: column; border-top: 1px solid var(--border); background: var(--surface); }
+.admin-detail-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; font-weight: 600; border-bottom: 1px solid var(--border); }
+.admin-detail-head button { border: none; background: none; color: var(--text-secondary); font-size: 12px; cursor: pointer; }
+.admin-chat { flex: 1; overflow-y: auto; padding: 10px 16px; display: flex; flex-direction: column; gap: 8px; }
+.admin-reply { display: flex; gap: 8px; padding: 10px 16px; border-top: 1px solid var(--border); }
+.admin-reply input { flex: 1; border: 1px solid var(--border); background: var(--bg); border-radius: 18px; padding: 8px 14px; font-size: 13px; outline: none; }
+.admin-finish { margin: 0 16px 12px; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 16px; padding: 8px; font-size: 12px; cursor: pointer; }
+
+/* === 【企业级客服Agent的实现】客服页完善：加载更早消息、点踩原因输入 === */
+.chat-load-more { align-self: center; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); border-radius: 14px; padding: 5px 14px; font-size: 12px; cursor: pointer; }
+.chat-load-more:disabled { opacity: .5; cursor: default; }
+.chat-feedback-reason { flex: 1; min-width: 0; border: 1px solid var(--border); background: var(--bg); border-radius: 12px; padding: 3px 8px; font-size: 12px; outline: none; }
+.chat-feedback-reason + button { border: none; background: var(--primary); color: #fff; border-radius: 12px; padding: 3px 10px; font-size: 12px; flex-shrink: 0; cursor: pointer; }
+
+/* === 【客服流式渲染的实现】气泡内容块：修复列表被全局 reset 压扁、块级内容撑破气泡 === */
+.chat-bubble { min-width: 0; overflow-wrap: anywhere; }
+.chat-bubble-content { display: block; min-width: 0; }
+.chat-bubble-content p { margin: 0 0 6px; }
+.chat-bubble-content p:last-child { margin-bottom: 0; }
+.chat-bubble-content ul,
+.chat-bubble-content ol { margin: 6px 0; padding-left: 20px; }
+.chat-bubble-content li { margin: 2px 0; line-height: 1.6; }
+.chat-bubble-content .ai-md-h { font-weight: 600; margin: 6px 0 4px; }
+.chat-bubble-content b { font-weight: 600; }
+/* 流式正文与工具时间线：沿用旅行助手的 .ai-step 样式，限制在气泡内 */
+.chat-bubble .ai-steps { margin-bottom: 4px; }
+.chat-bubble .ai-steps:empty { display: none; }
+.chat-bubble .ai-text { word-break: break-word; }
+
+/* === 【客服Agent完善】工作台：知识库操作、差评反馈卡片 === */
+.admin-header-actions { display: flex; align-items: center; gap: 2px; }
+.admin-quote { margin-top: 8px; padding: 8px 10px; background: var(--bg); border-radius: 8px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; word-break: break-word; }
+
+/* === 【手机模拟的实现】桌面端手机外壳 + 手势反馈 === */
+/* 默认隐藏：移动端使用原生全屏，不显示外壳 */
+.phone-shell {
+  display: none;
+}
+/* 左缘右滑返回提示：跟随手势进度淡入，超过阈值后触发返回 */
+.edge-back-hint {
+  position: fixed;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  margin-top: -17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  opacity: 0;
+  transform: translateX(-14px) scale(0.8);
+  transition: opacity 0.15s, transform 0.15s;
+  pointer-events: none;
+  z-index: 300;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.edge-back-hint.show {
+  transform: translateX(0) scale(1);
+}
+
+@media (min-width: 540px) and (min-height: 560px) and (hover: hover) {
+  /* 外壳本身 */
+  .phone-shell {
+    display: block;
+  }
+  .phone-device {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    width: 500px;
+    /* 不设最大高度上限：让手机屏幕始终与视口等高，避免高分辨率显示器上
+       tabbar/状态栏按视口定位而手机边框只有 900px 高，导致底部跑到边框外 */
+    height: calc(100vh - 24px);
+    height: calc(100dvh - 24px);
+    border: 10px solid #0b0b0f;
+    border-radius: 48px;
+    /* 第一层 100vmax 扩展阴影：用桌面背景色盖住手机边框之外的所有页面内容，
+       避免滚动内容从边框下缘/左右两侧露出来（用户看到的"下方超出边框"）；
+       后面两层保留原有立体投影与内描边 */
+    box-shadow: 0 0 0 100vmax #e6ebf2,
+                0 28px 80px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    z-index: 140;
+  }
+  /* 状态栏：时间 + 灵动岛 + 信号/WiFi/电池，点击回顶 */
+  .phone-statusbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 38px 38px 0 0;
+    pointer-events: auto;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: #111;
+    user-select: none;
+  }
+  .phone-time {
+    min-width: 38px;
+    text-align: left;
+    letter-spacing: 0.2px;
+  }
+  .phone-island {
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 22px;
+    border-radius: 12px;
+    background: #0b0b0f;
+  }
+  .phone-status-icons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #111;
+  }
+  /* 底部 Home 指示条 */
+  .phone-home-indicator {
+    position: absolute;
+    bottom: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    border-radius: 3px;
+    background: #111;
+    opacity: 0.85;
+  }
+  /* 内容让位：上边框 + 顶部间距 + 状态栏 = 58px，底部留出 Home 条区域 */
+  .app-container {
+    min-height: calc(100vh - 44px);
+    min-height: calc(100dvh - 44px);
+    padding-top: 58px;
+    padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 34px);
+  }
+  .app-container.has-global-search {
+    padding-top: 108px;
+  }
+  .app-container.no-tabbar {
+    padding-bottom: 34px;
+  }
+  /* 【全屏聊天页】聊天页自身铺满内容区，Home 条安全区由输入栏白底承担，
+     消除输入栏下方多出来的一条灰色空白 */
+  .app-container.no-tabbar:has(.chat-page) {
+    padding-bottom: 0;
+  }
+  /* 全屏聊天页：高度 = 视口 - 顶部外壳22 - 状态栏36 - 底部外壳22，铺满屏幕到 Home 条
+     （容器 padding-top 58 含顶部外壳偏移，故底部只到 100dvh-80 才能贴住屏幕下缘） */
+  .app-container.no-tabbar .chat-page {
+    height: calc(100vh - 80px - var(--safe-bottom));
+    height: calc(100dvh - 80px - var(--safe-bottom));
+  }
+  /* 输入栏白底向下延伸 34px 盖住 Home 条安全区，控件位置保持不变 */
+  .app-container.no-tabbar .chat-input-bar {
+    padding-bottom: calc(10px + 34px);
+  }
+  /* 客服工作台同样按外壳可视高度布局，避免回复框被推到边框外 */
+  .app-container.no-tabbar .admin-page {
+    height: calc(100vh - 136px - var(--safe-bottom));
+    height: calc(100dvh - 136px - var(--safe-bottom));
+  }
+  .login-page,
+  .register-page {
+    min-height: calc(100vh - 136px);
+    min-height: calc(100dvh - 136px);
+  }
+  .global-search-bar {
+    top: 58px;
+  }
+  .tabbar {
+    /* tabbar 保持在屏幕内（距视口底 34px），不再延伸到边框外 */
+    bottom: 34px;
+  }
+  /* 只补屏幕内 Home 条区域的 12px 空白：
+     手机内容区底部 = 视口底 - 22px（12px 外留白 + 10px 边框），
+     tabbar 底部在 34px，所以屏幕内还剩 12px；补这段白色即可，
+     不会像之前铺到视口底那样从手机边框下方露出来。 */
+  .tabbar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -12px;
+    height: 12px;
+    background: var(--surface);
+    border-radius: 0 0 24px 24px;
+  }
+  /* AI 悬浮球随 tabbar 上移，避免被底部外壳/Home 条遮挡；
+     右侧按手机内容区定位（视口右边 - 240px + 14px），不再跑到手机边框外 */
+  .ai-fab {
+    right: calc(50% - 240px + 14px);
+    bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 48px);
+  }
+  /* 无 tabbar 页：贴住屏幕下缘上方 22px（外壳下边框 + 底部留白） */
+  .ai-fab.fab-bare {
+    bottom: 44px;
+  }
+  /* 返回之前推荐按钮：与 AI 悬浮球同坐标系（外壳下球顶=56+safe+48+44），恒在球顶上方 12px */
+  .restore-fab {
+    right: calc(50% - 240px + 14px);
+    bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 104px);
+  }
+  /* 游记详情底部评论输入条：sticky bottom 让出 Home 条区域 */
+  .comment-box {
+    bottom: 34px;
+  }
+  /* 桌面外壳下取消吸顶：
+     外壳已给 app 顶部留出 58px 状态栏空间，若页面头部再 sticky top:58，
+     吸顶偏移会按内容盒重复叠加一次，导致标题被顶下去 58px（顶部大空白），
+     并盖住下方消息分类圈等内容。这里改为普通文档流，头部紧贴状态栏下方。 */
+  .page-header,
+  .search-header,
+  .search-result-tabs {
+    position: static;
+    top: auto;
+  }
+  /* 弹层/抽屉统一限制在手机屏幕内：桌面背景被外壳遮住后，弹层不能跑到屏幕外 */
+  .side-mask,
+  .city-sheet-mask,
+  .recharge-mask,
+  .modal-mask,
+  .avatar-preview-mask,
+  .barcode-mask {
+    left: calc(50% - 240px);
+    width: 480px;
+    top: 22px;
+    bottom: 22px;
+    border-radius: 38px;
+    /* 裁剪到手机屏幕内：底部弹层（如选择目的地 city-sheet）隐藏态停驻在蒙层底缘
+       之外（translateY(100%)），不裁剪会画到屏幕下缘边框上，形成"多余色块" */
+    overflow: hidden;
+  }
+  .side-drawer {
+    left: calc(50% - 240px);
+    top: 22px;
+    bottom: 22px;
+    border-radius: 38px 0 0 38px;
+  }
+  /* 关闭态归位到屏幕左缘之外，保证滑出动画平滑 */
+  .side-drawer:not(.show) {
+    left: 0;
+  }
+  /* 隐藏桌面滚动条，强化手机观感（滚轮/拖拽仍可滚动）。
+     必须同时作用在 html 上：页面滚动条属于 documentElement，
+     只隐藏 body 时内容仍按"视口 − 15px 滚动条"居中，
+     而手机外壳按完整视口居中，会出现 7.5px 的左右偏移（页面看起来整体歪） */
+  html,
+  body {
+    background: #e6ebf2;
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+/* --- 小屏手机（≤380px）：搜索 / AI 总结 / 聊天等新组件适配 --- */
+@media (max-width: 380px) {
+  .search-header { padding: 8px 12px; }
+  .search-ai-wrap { padding: 10px 12px 4px; }
+  .search-ai-card { padding: 12px 12px 9px; }
+  .search-ai-source { max-width: 158px; }
+  .search-ai-source-title,
+  .search-ai-source-sub { max-width: 118px; }
+  .search-ai-suggest-chip { padding: 5px 9px; font-size: 11px; }
+  .search-result-tab { font-size: 13px; padding: 10px 0; }
+  .chat-input-bar { padding: 8px 10px; gap: 6px; }
+  .chat-bubble { max-width: 88%; }
+  .ai-chips { padding: 8px 10px; gap: 6px; }
+  .ai-chip { font-size: 12px; }
+  .tabbar-item { font-size: 9px; }
+  .user-stats { gap: 0; }
+  .search-input { font-size: 16px; }
+}
+
+/* iOS Safari：输入框字号 <16px 时聚焦会自动放大页面，统一提到 16px */
+@supports (-webkit-touch-callout: none) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* 横屏矮屏：压缩头部高度，把空间留给内容区 */
+@media (max-height: 520px) and (orientation: landscape) {
+  .page-header {
+    min-height: 48px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .search-header {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
