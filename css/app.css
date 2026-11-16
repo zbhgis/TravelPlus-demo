@@ -6087,7 +6087,14 @@ img[src=""], img:not([src]) { opacity: 0; }
   .tab-item { font-size: 11px; padding: 6px 2px; }
   .notes-waterfall { columns: 2; column-gap: 8px; padding: 10px 12px 14px; }
   .feed-list { padding: 0 12px; }
-  .attraction-card .card-img { width: 100px; min-height: 90px; }
+  .attraction-card .card-img { width: 90px; min-height: 90px; }
+  /* 【320px 实测修复】卡片底部行（评分+价格+秒杀+人数）装不下 → 缩间距并允许换行 */
+  .attraction-card .card-bottom { gap: 8px; flex-wrap: wrap; row-gap: 2px; }
+  /* 【320px 实测修复】home-topbar 溢出：三 tab + 搜索钮放不下 → 缩 padding/gap/按钮/字号 */
+  .home-topbar { padding: calc(2px + min(env(safe-area-inset-top, 0px), 60px)) 10px 4px; gap: 6px; }
+  .home-search-btn { width: 30px; height: 30px; }
+  .channel-tab { font-size: 13px; padding: 7px 0; }
+  .search-ai-ask { padding: 3px 8px; }
   .attraction-card .card-info { padding: 10px; gap: 4px; }
   .attraction-card .card-name { font-size: 14px; }
   .profile-header { padding: 20px 12px; gap: 10px; }
