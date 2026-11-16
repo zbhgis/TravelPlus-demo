@@ -270,7 +270,9 @@ body.drag-scrolling * {
   min-height: 44px;
   /* 【多分辨率适配】刘海/独立窗口避让 env 封顶 60px——部分安卓 WebView 会报告异常大的
      safe-area 值导致页头下方留白失控；封顶后刘海机型正常避让、异常设备不再放大留白。
-     基础间隙 2px：标题尽可能贴近状态栏下缘（原生 App 视觉） */
+     基础间隙 2px：标题尽可能贴近状态栏下缘（原生 App 视觉）。
+     第一行无 min() 为老浏览器（Chrome<79/iOS<11.1）回退声明 */
+  padding-top: calc(2px + env(safe-area-inset-top, 0px));
   padding-top: calc(2px + min(env(safe-area-inset-top, 0px), 60px));
   padding-bottom: 8px;
   padding-left: 16px;
