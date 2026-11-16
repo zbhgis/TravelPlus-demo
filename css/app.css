@@ -269,8 +269,9 @@ body.drag-scrolling * {
   gap: 12px;
   min-height: 44px;
   /* 【多分辨率适配】刘海/独立窗口避让 env 封顶 60px——部分安卓 WebView 会报告异常大的
-     safe-area 值导致页头下方留白失控；封顶后刘海机型正常避让、异常设备不再放大留白 */
-  padding-top: calc(6px + min(env(safe-area-inset-top, 0px), 60px));
+     safe-area 值导致页头下方留白失控；封顶后刘海机型正常避让、异常设备不再放大留白。
+     基础间隙 2px：标题尽可能贴近状态栏下缘（原生 App 视觉） */
+  padding-top: calc(2px + min(env(safe-area-inset-top, 0px), 60px));
   padding-bottom: 8px;
   padding-left: 16px;
   padding-right: 16px;
@@ -358,8 +359,8 @@ body.drag-scrolling * {
   display: flex;
   align-items: center;
   gap: 10px;
-  /* 【多分辨率适配】移动端贴顶布局 + 刘海避让封顶 60px（防异常设备 env 过大） */
-  padding: calc(6px + min(env(safe-area-inset-top, 0px), 60px)) 16px 6px;
+  /* 【多分辨率适配】移动端贴顶布局 + 刘海避让封顶 60px（防异常设备 env 过大），基础间隙 2px */
+  padding: calc(2px + min(env(safe-area-inset-top, 0px), 60px)) 16px 6px;
 }
 .home-topbar .channel-tabs {
   flex: 1;
@@ -6075,7 +6076,7 @@ img[src=""], img:not([src]) { opacity: 0; }
 @media (max-width: 360px) {
   .page-content { padding: 10px 12px; }
   /* 小屏同样保留刘海避让（env 封顶 60px），不能被简写覆盖丢失 */
-  .page-header { padding: calc(6px + min(env(safe-area-inset-top, 0px), 60px)) 12px 8px; }
+  .page-header { padding: calc(2px + min(env(safe-area-inset-top, 0px), 60px)) 12px 8px; }
   .page-header h2 { font-size: 15px; }
   .section-title { font-size: 15px; padding: 12px 12px 6px; }
   .search-bar { padding: 8px 12px; gap: 8px; }
